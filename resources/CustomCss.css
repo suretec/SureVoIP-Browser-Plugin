@@ -1,0 +1,160 @@
+.SureVoIPExtensionValidateTips, .SureVoIPExtensionValidateSMSTips, .SureVoIPExtensionValidateFAXTips {
+	font-family: arial;
+	font-size: 17px;
+	display: none;
+}
+.SureVoIPExtensionDialogAttribute textarea {
+	width: 100%;
+	margin-top: 7px;
+	height: 250px;
+	background: none !important;
+	background-color: white !important;
+}
+.SureVoIPExtensionDialogAttribute #FAXBody {
+	font-family: arial;
+	font-size: 14px;
+	width: 100%;
+	margin-top: 5px;
+}
+#SureVoIPExtensionPopupContainer a {
+	text-decoration: none;
+	color: white;
+	font: 14px arial;
+}
+.SureVoIPExtensionMenuItemContainer {
+	background-color: #00a3d9;
+	border-top: #33b5e1 1px solid;
+	border-bottom: #0092c3 1px solid;
+	padding: 6px;
+}
+.SureVoIPExtensionMenuItemContainer:hover {
+	background-color: #12c729;
+	border-top: #41d254 1px solid;
+	border-bottom: #10b226 1px solid;
+}
+#SureVoIPExtensionImg {
+	padding: 8px;
+}
+#SureVoIPExtensionPopupContainer {
+	border-radius: 20px;
+	height: 158px;
+	width: 132px;
+	text-align: center;
+	background-color: white;
+	position: absolute;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #9ddbf0;
+    z-index: 1000000;
+}
+.SureVoIPExtensionSettingsMenuItemContainer {
+	background-color: #9a9a9a;
+	padding: 7px;
+	border-bottom-right-radius: 20px;
+	border-bottom-left-radius: 20px;
+}
+.SureVoIPExtensionSettingsMenuItemContainer:hover {
+	background-color: #10b226;
+}
+.SureVoIPExtensionDialogTitleDiv {
+	padding-left: 10px;
+	padding-top: 5px;
+	background-color: #00a2d9;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	height: 19px;
+	font: 14px arial;
+	color: white;
+}
+.SureVoIPExtensionDialogContainer {
+	padding: 0;
+	border-radius: 5px;
+	border: 1px #b2e1f1 solid;
+	background: none;
+	background-color: #ebf5f7;
+}
+.SureVoIPExtensionDialogContainer .ui-dialog-buttonpane {
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	background: none;
+	border-top: 0;
+	padding: 0;
+}
+
+.SureVoIPExtensionDialogContainer .ui-dialog-buttonset button:last-child {
+	margin-right: 0;
+}
+.SureVoIPExtensionDialogHeader {
+	background-color: #d9ebef;
+	height: 14px;
+	font: 12px arial;
+	color: #6aacbc;
+	padding: 5px 0 5px 10px;
+}
+.SureVoIPExtensionDialogAttribute {
+	padding: 10px;
+}
+
+.SureVoIPExtensionSMSCharactersCountAttribute {
+	padding-right: 10px;
+	float: right;
+}
+
+.SureVoIPExtensionDialogAttributeLabel {
+	font: 12px arial;
+	color: #606261;
+	width: 30%;
+	display: block;
+	float: left;
+	padding-top: 7px;
+}
+
+.SureVoIPExtensionSMSLabel {
+	font: 12px arial;
+	color: #606261;
+}
+
+.SureVoIPExtensionDialogContainer .ui-dialog-buttonset {
+	float: none !important;
+	margin: 0 103px;
+}
+.SureVoIPExtensionDialogContainer .ui-dialog-buttonset button {
+	height: 29px;
+	width: 68px;
+	background: none;
+	background-color: #00a2d9;
+}
+.SureVoIPExtensionDialogContainer .ui-dialog-buttonset span {
+	padding: 0;
+	font: 12px arial;
+	color: white;
+}
+
+.SureVoIPExtensionDialogAttribute .ui-state-error {
+	background: none;
+	color: black;
+	background-color: white;
+}
+
+.SureVoIPExtensionLoadingDiv {
+	display: none;
+	position: fixed;
+	z-index: 1000000;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	background: rgba( 255, 255, 255, .8 )url(resource-image://SendingRequest.png)50% 50%no-repeat;
+}
+
+/* When the body has the loading class, we turn
+ the scrollbar off with overflow:hidden */
+/*body.SureVoIPExtensionLoading {
+ overflow: hidden;
+ }*/
+
+/* Anytime the body has the loading class, our
+ modal element will be visible */
+/*body.SureVoIPExtensionLoading .SureVoIPExtensionLoadingDiv {
+ display: block;
+ }*/
