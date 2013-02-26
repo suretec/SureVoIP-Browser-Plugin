@@ -144,17 +144,54 @@
 	left: 0;
 	height: 100%;
 	width: 100%;
-	background: rgba( 255, 255, 255, .8 )url(resource-image://SendingRequest.png)50% 50%no-repeat;
+	background: rgba(102, 102, 102, 0.6) url(resource-image://SendingRequest.png) 50% 50%no-repeat;
 }
 
-/* When the body has the loading class, we turn
- the scrollbar off with overflow:hidden */
-/*body.SureVoIPExtensionLoading {
- overflow: hidden;
- }*/
+div.SureVoIPExtensionFaxBody_FileInputContainer {
+	position: relative;
+}
 
-/* Anytime the body has the loading class, our
- modal element will be visible */
-/*body.SureVoIPExtensionLoading .SureVoIPExtensionLoadingDiv {
- display: block;
- }*/
+div.SureVoIPExtensionFaxBody_FakeFile {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 1;
+	font: 12px arial;
+}
+
+div.SureVoIPExtensionFaxBody_FakeFile button {
+	float: left;
+	padding: 0;
+	color: white;
+	
+	height: 29px;
+	width: 100px;
+	background: none;
+	background-color: rgb(0, 162, 217);
+	
+	border: none;
+	border-radius: 4px;
+	
+	margin: 5px 0px 5px 5px;
+}
+
+div.SureVoIPExtensionFaxBody_FakeFile input[type=text] {
+	float: left;
+	padding: 0;
+	height: 29px;
+	margin: 5px 5px 5px 0px;
+	width: 218px;
+}
+
+div.SureVoIPExtensionFaxBody_FakeFile input[type=file] {
+	width: 330px;
+}
+
+#SureVoIPExtensionFaxBody {
+	position: relative;
+	text-align: right;
+	-moz-opacity:0 ;
+	filter:alpha(opacity: 0);
+	opacity: 0;
+	z-index: 2;
+}
