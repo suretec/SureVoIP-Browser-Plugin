@@ -14,9 +14,6 @@ function log(message) {
 var hoveredNumber = "";
 var PostSaveAction = null;
 
-var SMSBody = undefined
-var SMSTips = undefined;
-
 var dialogValidations = {
 	updateTips:function(t, tips){
 		tips.text(t).addClass("ui-state-highlight");
@@ -55,12 +52,22 @@ var dialogValidations = {
 };
 
 var dialogs = {
+	username:undefined,
+	password:undefined,
+	dialNumber:undefined,
+	smsname:undefined,
+	faxNumber:undefined,
+	allCreateUserFields:undefined,
+	createUserTips:undefined,
+	SMSBody:undefined,
+	SMSTips:undefined,
+	SMSCharactersCount:undefined,
+	FaxBody:undefined,
+	FaxTips:undefined,
 	init : function() {
 		this.constructSettings();
 		this.constructSMS();
 		this.constructFax();
-		SMSBody = $("#SureVoIPExtensionSMSBody");
-		SMSTips = $(".SureVoIPExtensionValidateSMSTips");
 	},
 	constructSettings : function() {
 		var tempString = '<div id="SureVoIPExtensionDialog" title="SureVoIPExtensionDialog" style="display:none;">';
@@ -93,9 +100,16 @@ var dialogs = {
 		tempString += '</div>';
 		
 		$('body').append(tempString);
+		dialogs.username = $("#SureVoIPExtensionUsername");
+		dialogs.password = $("#SureVoIPExtensionPassword");
+		dialogs.dialNumber = $("#SureVoIPExtensionDialNumber");
+		dialogs.smsname = $("#SureVoIPExtensionSMSName");
+		dialogs.faxNumber = $("#SureVoIPExtensionFaxNumber");
+		dialogs.allCreateUserFields = $([]).add(dialogs.username).add(dialogs.password).add(dialogs.dialNumber).add(dialogs.smsname).add(dialogs.faxNumber);
+		dialogs.createUserTips = $(".SureVoIPExtensionValidateTips");
 	},
 	constructSMS : function(){
-		var tempString = '<div id="SureVoIPExtensionSMSDialog" title="SureVoIPExtensionDialog">';
+		var tempString = '<div id="SureVoIPExtensionSMSDialog" title="SureVoIPExtensionDialog" style="display:none;">';
 		tempString += '	<div class="SureVoIPExtensionDialogTitleDiv"><b>SureVoIP</b> SMS</div>';
 		tempString += '	<div class="SureVoIPExtensionDialogAttribute" >';
 		tempString += '		<label class="SureVoIPExtensionSMSLabel">To: </label>';
@@ -107,15 +121,19 @@ var dialogs = {
 		tempString += '	</div>';
 		tempString += '	<div class="SureVoIPExtensionSMSCharactersCountAttribute" >';
 		tempString += '		<label class="SureVoIPExtensionSMSLabel">Characters count left:</label>';
-		tempString += '		<label id="SMSCharactersCount" class="SureVoIPExtensionSMSLabel">160</label>';
+		tempString += '		<label id="SureVoIPExtensionSMSCharactersCount" class="SureVoIPExtensionSMSLabel">160</label>';
 		tempString += '	</div>';
 		tempString += '	<p class="SureVoIPExtensionDialogAttribute SureVoIPExtensionValidateSMSTips"></p>';
 		tempString += '</div>';
 
 		$('body').append(tempString);
+		dialogs.SMSBody = $("#SureVoIPExtensionSMSBody");
+		dialogs.SMSTips = $(".SureVoIPExtensionValidateSMSTips");
+		dialogs.SMSCharactersCount = $("#SureVoIPExtensionSMSCharactersCount");
+		dialogs.SMSBodyAttachEvent();
 	},
 	constructFax: function(){
-		var tempString = '<form id="SureVoIPExtensionFAXDialog" title="SureVoIPExtensionDialog" enctype="multipart/form-data">';
+		var tempString = '<form id="SureVoIPExtensionFAXDialog" title="SureVoIPExtensionDialog" style="display:none;" enctype="multipart/form-data">';
 		tempString += '<div class="SureVoIPExtensionDialogTitleDiv"><b>SureVoIP</b> FAX</div>';
 		tempString += '<div class="SureVoIPExtensionDialogAttribute" >';
 		tempString += '	<label class="SureVoIPExtensionSMSLabel">To: </label>';
@@ -123,21 +141,136 @@ var dialogs = {
 		tempString += '</div>';
 		tempString += '<input id="SureVoIPExtensionFAXToValue" name="to" type="hidden"/><input id="SureVoIPExtensionFaxFrom" name="from" type="hidden"/>';
 		tempString += '<div class="SureVoIPExtensionDialogAttribute" >';
-		tempString += '	<label for="SureVoIPExtensionFAXBody" class="SureVoIPExtensionSMSLabel">FAX body</label>';
-		tempString += '	<input type="file" name="file" id="SureVoIPExtensionFAXBody" accept=".pdf,.tiff,.html,.htm,.txt" />';
+		tempString += '	<label for="SureVoIPExtensionFaxBody" class="SureVoIPExtensionSMSLabel">FAX body</label>';
+		tempString += '	<input type="file" name="file" id="SureVoIPExtensionFaxBody" accept=".pdf,.tiff,.html,.htm,.txt" />';
 		tempString += '</div>';
-		tempString += '<p class="SureVoIPExtensionDialogAttribute SureVoIPExtensionValidateFAXTips"></p>';
+		tempString += '<p class="SureVoIPExtensionDialogAttribute SureVoIPExtensionValidateFaTips"></p>';
 		tempString += '</form>';		
 
 		$('body').append(tempString);
+		dialogs.FaxBody = $('#SureVoIPExtensionFaxBody');
+		dialogs.FaxTips = $(".SureVoIPExtensionValidateFaxTips");
 	},
 	showSettings : function() {
-		$("#SureVoIPExtensionDialog").dialog("open");
+		attachDialog.settingDialog.dialog("open");
 		if (!settings.isReady)
 			return;
 
 		
 		settings.fillInUI();
+	},
+	constructOptions : function(height, width,buttons,closeDialog) {
+		buttons.Cancel = function() {
+			$(this).dialog("close");
+		}
+		var options = {
+			autoOpen : false,
+			height : height,
+			width : width,
+			modal : true,
+			buttons : buttons,
+			close : function() {
+				closeDialog();
+			}
+		};
+		return options;
+	},
+	SMSBodyAttachEvent:function(){
+		dialogs.SMSBody.bind('input propertychange', function() {
+			dialogs.SMSCharactersCount.text(160 - dialogs.SMSBody.val().length);
+			if (parseInt(dialogs.SMSCharactersCount.text()) < 0)
+				dialogs.SMSCharactersCount.css("color", "red");
+			else
+				dialogs.SMSCharactersCount.css("color", "black");
+		});
+	}
+}
+
+var attachDialog = {
+	settingDialog:undefined,
+	SMSDialog:undefined,
+	FaxDialog:undefined,
+	init:function(){
+		attachDialog.settingDialog = $("#SureVoIPExtensionDialog");
+		attachDialog.SMSDialog = $("#SureVoIPExtensionSMSDialog");
+		attachDialog.FaxDialog = $("#SureVoIPExtensionFAXDialog");
+		attachDialog.attachSettingDialog();
+		attachDialog.attachSMSDialog();
+		attachDialog.attachFaxDialog();
+	},
+	attachSettingDialog:function(){
+		attachDialog.settingDialog.dialog(dialogs.constructOptions(435,350,{
+				Save : function() {
+					var bValid = true;
+					dialogs.allCreateUserFields.removeClass("ui-state-error");
+					bValid = bValid && dialogValidations.checkLength(dialogs.username, "username", 3, 16, dialogs.createUserTips);
+					bValid = bValid && dialogValidations.checkLength(dialogs.password, "password", 5, 160, dialogs.createUserTips);
+	
+					bValid = bValid && dialogValidations.checkRegexp(dialogs.username, /([0-9a-z_])+$/i, "Username may consist of a-z, 0-9, underscores.", dialogs.createUserTips);
+					bValid = bValid && dialogValidations.checkNumber(dialogs.dialNumber, "From Number", dialogs.createUserTips);
+	
+					if (bValid) {
+						settings.update({
+							'username' : dialogs.username.val(),
+							'password' : dialogs.password.val(),
+							'smsname' : dialogs.smsname.val(),
+							'dialNumber' : dialogs.dialNumber.val(),
+							'faxNumber' : dialogs.faxNumber.val()
+						});
+						settings.sendToBackground();
+						$(this).dialog("close");
+						dialogs.createUserTips.hide();
+						if (PostSaveAction != null)
+							PostSaveAction();
+					} else {
+						attachDialog.settingDialog.css('height', 480);
+					}
+				}
+			},function(){
+				dialogs.allCreateUserFields.val("").removeClass("ui-state-error");
+				dialogs.createUserTips.hide();
+			}
+		));
+	},
+	attachSMSDialog:function(){
+		attachDialog.SMSDialog.dialog(dialogs.constructOptions(520,350,{
+				Send : function() {
+					var bValid = true;
+					bValid = bValid && dialogValidations.checkLength(dialogs.SMSBody, "SMS body", 1, 160, dialogs.SMSTips);
+					if (bValid) {
+						phoneManager.sms();
+						$(this).dialog("close");
+						dialogs.SMSTips.hide();
+					} else {
+						attachDialog.SMSDialog.css('height', 500);
+					}
+				}
+			},function() {
+				dialogs.SMSBody.removeClass("ui-state-error");
+				dialogs.SMSTips.hide();
+				dialogs.SMSCharactersCount.text("160");
+		}));
+	},
+	attachFaxDialog:function(){
+		attachDialog.FaxDialog.dialog(dialogs.constructOptions(250,350,{
+				Send : function() {
+					var bValid = true;
+					if (dialogs.FaxBody.val() == "") {
+						bValid = false;
+						alert("Please choose a file.");
+					}
+	
+					if (bValid) {
+						phoneManager.fax();
+						$(this).dialog("close");
+						dialogs.FaxTips.hide();
+					}
+				}
+			},function() {
+				dialogs.FaxBody.removeClass("ui-state-error");
+				dialogs.FaxTips.hide();
+			}
+		));
 	}
 }
 
@@ -285,6 +418,7 @@ var phoneManager = {
 
 		if (!settings.smsname) {
 			alert('Please enter your "From Name" in the SMS Settings section.');
+			return false;
 		}
 
 		return true;
@@ -295,6 +429,7 @@ var phoneManager = {
 
 		if (!settings.faxNumber) {
 			alert('Please provide your "From Number" in the Fax Settings section.');
+			return false;
 		}
 
 		return true;
@@ -314,12 +449,13 @@ var phoneManager = {
 		}
 	},
 	sms : function() {
-		if (this.checkBeforeSMS()) {
+		if (phoneManager.checkBeforeSMS()) {
 			$(".SureVoIPExtensionLoadingDiv").show();
+			debugger;
 			serverRequest.sendSMS({
 				to : phoneManager.formatNumber(hoveredNumber),
 				from : phoneManager.formatNumber(settings.smsname),
-				message : SMSBody.val()
+				message : dialogs.SMSBody.val()
 			});
 		} else {
 			PostSaveAction = phoneManager.sms;
@@ -329,7 +465,7 @@ var phoneManager = {
 	fax : function() {
 		if (phoneManager.checkBeforeFAX()) {
 			$(".SureVoIPExtensionLoadingDiv").show();
-			serverRequest.sendFax(phoneManager.formatNumberForFAX(settings.faxNumber), phoneManager.formatNumberForFAX(faxNumber));
+			serverRequest.sendFax(phoneManager.formatNumberForFAX(settings.faxNumber), phoneManager.formatNumberForFAX(settings.faxNumber));
 		} else {
 			PostSaveAction = phoneManager.fax;
 			dialogs.showSettings();
@@ -432,6 +568,26 @@ var phoneNumberDetection = {
 	}
 }
 
+appAPI.ready(function(jQuery) {
+	$ = jQuery;
+	function init() {
+		appAPI.resources.jQueryUI('1.10.1');
+		appAPI.resources.includeJS('jquery.form.js');
+		appAPI.resources.includeCSS('jquery-ui-1.10.0.custom.css');
+		appAPI.resources.includeCSS('CustomCss.css');
+
+		messageHandler.init();
+		settings.init();
+		dialogs.init();
+		attachDialog.init();
+		phoneNumberDetection.init();
+	}
+
+	init();
+	// Place your code here (you can also define new functions above this scope)
+	// The $ object is the extension's jQuery object
+	var showMenu = false;
+
 	function GetPopupContainer() {
 		var popupContainer = document.getElementById('SureVoIPExtensionPopupContainer');
 		if (popupContainer == undefined) {
@@ -457,14 +613,14 @@ var phoneNumberDetection = {
 				phoneManager.call();
 			});
 			$("#SureVoIPExtensionSMSBtn").click(function() {
-				SMSBody.val("");
+				dialogs.SMSBody.val("");
 				$("#SureVoIPExtensionSMSTo").text(hoveredNumber);
-				$("#SureVoIPExtensionSMSDialog").dialog("open");
+				attachDialog.SMSDialog.dialog("open");
 			});
 			$("#SureVoIPExtensionFAXBtn").click(function() {
-				FAXBody.val("");
+				dialogs.FaxBody.val("");
 				$("#SureVoIPExtensionFAXToLabel").text(hoveredNumber);
-				$("#SureVoIPExtensionFAXDialog").dialog("open");
+				attachDialog.FaxDialog.dialog("open");
 			});
 			$("#SureVoIPExtensionSettingsBtn").click(function() {
 				PostSaveAction = null;
@@ -474,26 +630,6 @@ var phoneNumberDetection = {
 
 		return popupContainer;
 	}
-
-appAPI.ready(function(jQuery) {
-	$ = jQuery;
-	function init() {
-		appAPI.resources.jQueryUI('1.10.1');
-		appAPI.resources.includeJS('jquery.form.js');
-		appAPI.resources.includeCSS('jquery-ui-1.10.0.custom.css');
-		appAPI.resources.includeCSS('CustomCss.css');
-
-		messageHandler.init();
-		settings.init();
-		dialogs.init();
-		phoneNumberDetection.init();
-	}
-
-	init();
-	// Place your code here (you can also define new functions above this scope)
-	// The $ object is the extension's jQuery object
-	var showMenu = false;
-	
 
 
 	$("body").append('<div class="SureVoIPExtensionLoadingDiv" style="display:none;"></div>');
@@ -510,182 +646,10 @@ appAPI.ready(function(jQuery) {
 	//	}
 
 
-	/*********************************************/
-	/************Dialog Part**********************/
-	/*********************************************/
-	var username = $("#SureVoIPExtensionUsername"), password = $("#SureVoIPExtensionPassword"), dialNumber = $("#SureVoIPExtensionDialNumber"), smsname = $("#SureVoIPExtensionSMSName"), faxNumber = $("#SureVoIPExtensionFaxNumber"), allFields = $([]).add(username).add(password).add(dialNumber).add(smsname).add(faxNumber), createUserTips = $(".SureVoIPExtensionValidateTips");
 
-
-	var options = {
-		autoOpen : false,
-		height : 435,
-		width : 350,
-		modal : true,
-		buttons : {
-			Save : function() {
-				var bValid = true;
-				allFields.removeClass("ui-state-error");
-				bValid = bValid && dialogValidations.checkLength(username, "username", 3, 16, createUserTips);
-				bValid = bValid && dialogValidations.checkLength(password, "password", 5, 160, createUserTips);
-
-				bValid = bValid && dialogValidations.checkRegexp(username, /([0-9a-z_])+$/i, "Username may consist of a-z, 0-9, underscores.", createUserTips);
-				bValid = bValid && dialogValidations.checkNumber(dialNumber, "From Number", createUserTips);
-
-				if (bValid) {
-					debugger;
-					settings.update({
-						'username' : username.val(),
-						'password' : password.val(),
-						'smsname' : smsname.val(),
-						'dialNumber' : dialNumber.val(),
-						'faxNumber' : faxNumber.val()
-					});
-					settings.sendToBackground();
-
-					$(this).dialog("close");
-					$(".SureVoIPExtensionValidateTips").hide();
-					if (PostSaveAction != null)
-						PostSaveAction();
-				} else {
-					$("#SureVoIPExtensionDialog").css('height', 480);
-				}
-			},
-			Cancel : function() {
-				$(this).dialog("close");
-			}
-		},
-		close : function() {
-			allFields.val("").removeClass("ui-state-error");
-			$(".SureVoIPExtensionValidateTips").hide();
-		}
-	};
-
-	$("#SureVoIPExtensionDialog").dialog(options);
-	// $("#SureVoIPExtensionDialog").dialog({
-		// autoOpen : false,
-		// height : 435,
-		// width : 350,
-		// modal : true,
-		// buttons : {
-			// Save : function() {
-				// var bValid = true;
-				// allFields.removeClass("ui-state-error");
-				// bValid = bValid && dialogValidations.checkLength(username, "username", 3, 16, createUserTips);
-				// bValid = bValid && dialogValidations.checkLength(password, "password", 5, 160, createUserTips);
-// 
-				// bValid = bValid && dialogValidations.checkRegexp(username, /([0-9a-z_])+$/i, "Username may consist of a-z, 0-9, underscores.", createUserTips);
-				// bValid = bValid && dialogValidations.checkNumber(dialNumber, "From Number", createUserTips);
-// 
-				// if (bValid) {
-					// settings.update({
-						// 'username' : username.val(),
-						// 'password' : password.val(),
-						// 'smsname' : smsname.val(),
-						// 'dialNumber' : dialNumber.val(),
-						// 'faxNumber' : faxNumber.val()
-					// });
-					// settings.sendToBackground();
-// 
-					// $(this).dialog("close");
-					// $(".SureVoIPExtensionValidateTips").hide();
-					// if (PostSaveAction != null)
-						// PostSaveAction();
-				// } else {
-					// $("#SureVoIPExtensionDialog").css('height', 480);
-				// }
-			// },
-			// Cancel : function() {
-				// $(this).dialog("close");
-			// }
-		// },
-		// close : function() {
-			// allFields.val("").removeClass("ui-state-error");
-			// $(".SureVoIPExtensionValidateTips").hide();
-		// }
-	// });
-
-	/*********************************************/
-	/************SMS Part**********************/
-	/*********************************************/
 	
-
-	$("#SureVoIPExtensionSMSBody").bind('input propertychange', function() {
-		$("#SMSCharactersCount").text(160 - $("#SureVoIPExtensionSMSBody").val().length);
-		if (parseInt($("#SMSCharactersCount").text()) < 0)
-			$("#SMSCharactersCount").css("color", "red");
-		else
-			$("#SMSCharactersCount").css("color", "black");
-	});
-
-	$("#SureVoIPExtensionSMSDialog").dialog({
-		autoOpen : false,
-		height : 520,
-		width : 350,
-		modal : true,
-		buttons : {
-			Send : function() {
-				var bValid = true;
-
-				bValid = bValid && dialogValidations.checkLength(SMSBody, "SMS body", 1, 160, SMSTips);
-
-				if (bValid) {
-					phoneManager.sms();
-					$(this).dialog("close");
-					$(".SureVoIPExtensionValidateSMSTips").hide();
-				} else {
-					$("#SureVoIPExtensionSMSDialog").css('height', 500);
-				}
-			},
-			Cancel : function() {
-				$(this).dialog("close");
-			}
-		},
-		close : function() {
-			SMSBody.removeClass("ui-state-error");
-			$(".SureVoIPExtensionValidateSMSTips").hide();
-			$("#SMSCharactersCount").text("160");
-		}
-	});
-
-	/*********************************************/
-	/************FAX Part**********************/
-	/*********************************************/
-	
-	var FAXBody = $('#SureVoIPExtensionFAXBody'), FAXTips = $(".SureVoIPExtensionValidateFAXTips");
-
-	$("#SureVoIPExtensionFAXDialog").dialog({
-		autoOpen : false,
-		height : 250,
-		width : 350,
-		modal : true,
-		buttons : {
-			Send : function() {
-				var bValid = true;
-
-				//bValid = bValid && dialogValidations.checkLength( FAXBody, "FAX body", 1, 160,FAXTips );
-				if (FAXBody.val() == "") {
-					bValid = false;
-					alert("Please choose a file.");
-				}
-
-				if (bValid) {
-					phoneManager.fax();
-					$(this).dialog("close");
-					$(".SureVoIPExtensionValidateFAXTips").hide();
-				}
-			},
-			Cancel : function() {
-				$(this).dialog("close");
-			}
-		},
-		close : function() {
-			FAXBody.removeClass("ui-state-error");
-			$(".SureVoIPExtensionValidateFAXTips").hide();
-		}
-	});
-	//$('.ui-dialog-titlebar span[title=SureVoIPExtensionDialog])')
 	for (var i = 0; i < $(".ui-dialog-titlebar").length; i++) {
-		if ( $($(".ui-dialog-titlebar")[i]).find("span").first().html() == "SureVoIPExtensionDialog") {
+		if ($($(".ui-dialog-titlebar")[i]).find("span").first().html() == "SureVoIPExtensionDialog") {
 			$($(".ui-dialog-titlebar")[i]).hide();
 			$($(".ui-dialog-titlebar")[i]).parent().addClass("SureVoIPExtensionDialogContainer");
 			$($(".ui-dialog-titlebar")[i]).next().css("padding", "0");
