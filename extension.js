@@ -3,7 +3,7 @@ var $ = undefined;
 
 function log(message) {
 	//	Logging is currently disable as this is the final version.
-	console.log('	***** SureVoIP: ***** ' + message, arguments);
+	//console.log('	***** SureVoIP: ***** ' + message, arguments);
 }
 
 /************************************************************************************

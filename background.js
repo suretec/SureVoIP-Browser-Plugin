@@ -5,8 +5,12 @@
  *************************************************************************************/
 
 appAPI.ready(function($) {
-	appAPI.browserAction.setResourceIcon('favicon.png');
+	// Sets the initial browser icon
+	appAPI.browserAction.setResourceIcon('BrowserButton.png');
+	
+	// When the user clicks the browser button
 	appAPI.browserAction.onClick(function() {
+		// Send a message to the page to show the Settings dialog
 		appAPI.message.toActiveTab({
 			action : 'SureVoIPExtension_OpenSettingsDialog'
 		});
