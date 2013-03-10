@@ -19,34 +19,38 @@ appAPI.ready(function($) {
 	
 	appAPI.message.addListener(function(msg) {
 		switch (msg.action) {
+			// Save the settings in the database and send them to all tabs to be updated
 			case 'SureVoIPExtension_SaveSettings':
 				appAPI.db.set("Settings", msg.value);
-				//localStorage["Settings"] = msg.value;
 				appAPI.message.toAllTabs({
 					action : 'SureVoIPExtension_GetSettings_Response',
 					value : msg.value
 				});
 				break;
+			// Get the settings from the database and send them to all tabs to be updated
 			case 'SureVoIPExtension_GetSettings':
 				var value = appAPI.db.get("Settings");
-				//var value = localStorage["Settings"];
 				appAPI.message.toAllTabs({
 					action : 'SureVoIPExtension_GetSettings_Response',
 					value : value
 				});
 				break;
+			// Make the json request
 			case 'SureVoIPExtension_DoServerRequest':
 				var settings = JSON.parse(appAPI.db.get("Settings"));
 				$.support.cors = true;
+				// make encode64 before sending the request
 				msg.value.beforeSend = function(xhr) {
 					xhr.setRequestHeader("Authorization", "Basic " + encodingHelper.encode64(settings.username + ":" + settings.password));
 				};
+				// Send succes message to all tabs
 				msg.value.success = function(data, textStatus, jqXHR) {
 					appAPI.message.toActiveTab({
 						action : 'SureVoIPExtension_AjaxSuccess',
 						value : jqXHR
 					});
 				};
+				// Send error message to all tabs
 				msg.value.error = function(xhr, ajaxOptions, thrownError) {
 					appAPI.message.toActiveTab({
 						action : 'SureVoIPExtension_AjaxError',
@@ -58,6 +62,7 @@ appAPI.ready(function($) {
 		}
 	});
 });
+// Class to encode the string to "encode64"
 var encodingHelper = {
 	keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
 	StringMaker: function () {

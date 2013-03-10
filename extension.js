@@ -13,15 +13,20 @@ appAPI.ready(function(jQuery) {
 	}
 
 	/************************************************************************************
-	 This is your Page Code. The appAPI.ready() code block will be executed on every page load.
-	 For more information please visit our docs site: http://docs.crossrider.com
-	 *************************************************************************************/
+	This is your Page Code. The appAPI.ready() code block will be executed on every page load.
+	For more information please visit our docs site: http://docs.crossrider.com
+	*************************************************************************************/
 
+	// hoveredNumber is the number which the user hover on
 	var hoveredNumber = "";
+	// PostSaveAction is a function that perform the user action
 	var PostSaveAction = null;
+	// showMenuis a flag to show menu when it is true
 	var showMenu = false;
 
+	// class for dialog validations
 	var dialogValidations = {
+		//updates the error messages of the dialogs
 		updateTips : function(t, tips) {
 			tips.text(t).addClass("ui-state-highlight");
 			tips.show();
@@ -29,6 +34,7 @@ appAPI.ready(function(jQuery) {
 				tips.removeClass("ui-state-highlight", 1500);
 			}, 500);
 		},
+		//checks the length of the given textbox to be between the 2 given values and call updateTips if out of range
 		checkLength : function(o, n, min, max, tips) {
 			if (o.val().length > max || o.val().length < min) {
 				o.addClass("ui-state-error");
@@ -38,6 +44,7 @@ appAPI.ready(function(jQuery) {
 				return true;
 			}
 		},
+		//checks the value of the given textbox to be only numbers without characters and call uptadeTips if not number 
 		checkNumber : function(o, n, tips) {
 			if (o.val() && isNaN(o.val())) {
 				o.addClass("ui-state-error");
@@ -47,6 +54,7 @@ appAPI.ready(function(jQuery) {
 				return true;
 			}
 		},
+		//checks the value of the given textbox to match the regular expression and call uptadeTips if not matching
 		checkRegexp : function(o, regexp, n, tips) {
 			if (!( regexp.test(o.val()) )) {
 				o.addClass("ui-state-error");
@@ -77,6 +85,7 @@ appAPI.ready(function(jQuery) {
 			this.constructFax();
 			this.constructMenu();
 		},
+		// construct HTML of the settings dialog and add it to the page
 		constructSettings : function() {
 			var tempString = '<div id="SureVoIPExtensionDialog" title="SureVoIPExtensionDialog" style="display:none;">';
 			tempString += '<div class="SureVoIPExtensionDialogTitleDiv"><b>SureVoIP</b> Settings</div>';
@@ -116,6 +125,7 @@ appAPI.ready(function(jQuery) {
 			dialogs.allCreateUserFields = $([]).add(dialogs.username).add(dialogs.password).add(dialogs.dialNumber).add(dialogs.smsname).add(dialogs.faxNumber);
 			dialogs.createUserTips = $(".SureVoIPExtensionValidateTips");
 		},
+		// construct HTML of the SMS dialog and add it to the page
 		constructSMS : function() {
 			var tempString = '<div id="SureVoIPExtensionSMSDialog" title="SureVoIPExtensionDialog" style="display:none;">';
 			tempString += '	<div class="SureVoIPExtensionDialogTitleDiv"><b>SureVoIP</b> SMS</div>';
@@ -140,6 +150,7 @@ appAPI.ready(function(jQuery) {
 			dialogs.SMSCharactersCount = $("#SureVoIPExtensionSMSCharactersCount");
 			dialogs.SMSBodyAttachEvent();
 		},
+		// construct HTML of the Fax dialog and add it to the page
 		constructFax : function() {
 			var tempString = '<form id="SureVoIPExtensionFAXDialog" title="SureVoIPExtensionDialog" style="display:none;" enctype="multipart/form-data">';
 			tempString += '<div class="SureVoIPExtensionDialogTitleDiv"><b>SureVoIP</b> FAX</div>';
@@ -163,20 +174,31 @@ appAPI.ready(function(jQuery) {
 
 			$('body').append(tempString);
 			
+			//When a file is selected set the value to the Textbox appearing in the UI
 			$('#SureVoIPExtensionFaxBody').change(function() {
 				var fileLocation = this.value;
 				if (fileLocation.indexOf('\\')>0)
 					fileLocation = this.value.substring( this.value.lastIndexOf('\\') + 1);
 				$('.SureVoIPExtensionFaxBody_FakeFile input[type=text]').val(fileLocation);
-			})
+			});
 			dialogs.FaxBody = $('#SureVoIPExtensionFaxBody');
 			dialogs.FaxTips = $(".SureVoIPExtensionValidateFaxTips");
 		},
+		// construct HTML of the Menu and add it to the page
 		constructMenu : function() {
-			var popupContainer = "<div id='SureVoIPExtensionPopupContainer' style='display:none;'><div><img id='SureVoIPExtensionImg'  src='" + appAPI.resources.getImage("SureVoIP.jpg") + "' height='22px' width='112px'/></div>" + "<a id='SureVoIPExtensionCallBtn' href='javascript:void(0);'><div class='SureVoIPExtensionMenuItemContainer'>Call this</div></a><a id='SureVoIPExtensionSMSBtn' href='javascript:void(0);'><div class='SureVoIPExtensionMenuItemContainer'>Text this</div></a>" + "<a id='SureVoIPExtensionFAXBtn' href='javascript:void(0);'><div class='SureVoIPExtensionMenuItemContainer'>Fax this</div></a><a id='SureVoIPExtensionSettingsBtn' href='javascript:void(0);'><div class='SureVoIPExtensionSettingsMenuItemContainer'>Settings</div></a></div>";
+			var popupContainer = "<div id='SureVoIPExtensionPopupContainer' style='display:none;'>";
+			popupContainer += "<div>";
+			popupContainer += "<img id='SureVoIPExtensionImg'  src='" + appAPI.resources.getImage("SureVoIP.jpg") + "' height='22px' width='112px'/>";
+			popupContainer += "</div>";
+			popupContainer += "<a id='SureVoIPExtensionCallBtn' href='javascript:void(0);'><div class='SureVoIPExtensionMenuItemContainer'>Call this</div></a>";
+			popupContainer += "<a id='SureVoIPExtensionSMSBtn' href='javascript:void(0);'><div class='SureVoIPExtensionMenuItemContainer'>Text this</div></a>";
+			popupContainer += "<a id='SureVoIPExtensionFAXBtn' href='javascript:void(0);'><div class='SureVoIPExtensionMenuItemContainer'>Fax this</div></a>";
+			popupContainer += "<a id='SureVoIPExtensionSettingsBtn' href='javascript:void(0);'><div class='SureVoIPExtensionSettingsMenuItemContainer'>Settings</div></a>";
+			popupContainer += "</div>";
 			$("body").append(popupContainer);
 			popupContainer = document.getElementById('SureVoIPExtensionPopupContainer');
 
+			// on menu hover set the showMenu flag and on mouse leave set the flag to false and hide the menu
 			$('#SureVoIPExtensionPopupContainer').hover(function(e) {
 				log('hover over menu');
 				showMenu = true;
@@ -191,6 +213,7 @@ appAPI.ready(function(jQuery) {
 					}
 				}, 50);
 			});
+			
 			$("#SureVoIPExtensionCallBtn").click(function() {
 				phoneManager.call();
 			});
@@ -211,6 +234,7 @@ appAPI.ready(function(jQuery) {
 			return popupContainer;
 
 		},
+		//Open settings dialog and call fillInUI to fill the data 
 		showSettings : function() {
 			attachDialog.settingDialog.dialog("open");
 			if (!settings.isReady)
@@ -218,6 +242,7 @@ appAPI.ready(function(jQuery) {
 			
 			settings.fillInUI();
 		},
+		//Set the Options of the dialog
 		constructOptions : function(height, width, buttons, closeDialog) {
 			buttons.Cancel = function() {
 				$(this).dialog("close");
@@ -234,6 +259,7 @@ appAPI.ready(function(jQuery) {
 			};
 			return options;
 		},
+		// Attach an event to the sms body to display the character count on every user action
 		SMSBodyAttachEvent : function() {
 			dialogs.SMSBody.bind('input propertychange', function() {
 				dialogs.SMSCharactersCount.text(160 - dialogs.SMSBody.val().length);
@@ -245,6 +271,7 @@ appAPI.ready(function(jQuery) {
 		}
 	};
 
+	// Attaching the dialogs to their divs
 	var attachDialog = {
 		settingDialog : undefined,
 		SMSDialog : undefined,
@@ -259,9 +286,11 @@ appAPI.ready(function(jQuery) {
 			this.attachSMSDialog();
 			this.attachFaxDialog();
 		},
+		// Attach setting Dialog to the Settings div
 		attachSettingsDialog : function() {
 			attachDialog.settingDialog.dialog(dialogs.constructOptions(435, 350, {
 				Save : function() {
+					// Check for the Validations
 					var bValid = true;
 					dialogs.allCreateUserFields.removeClass("ui-state-error");
 					bValid = bValid && dialogValidations.checkLength(dialogs.username, "username", 3, 16, dialogs.createUserTips);
@@ -271,6 +300,7 @@ appAPI.ready(function(jQuery) {
 					bValid = bValid && dialogValidations.checkNumber(dialogs.dialNumber, "From Number", dialogs.createUserTips);
 
 					if (bValid) {
+						// Set the settings values
 						settings.update({
 							'username' : dialogs.username.val(),
 							'password' : dialogs.password.val(),
@@ -278,6 +308,7 @@ appAPI.ready(function(jQuery) {
 							'dialNumber' : dialogs.dialNumber.val(),
 							'faxNumber' : dialogs.faxNumber.val()
 						});
+						// Send new settings to the background
 						settings.sendToBackground();
 						$(this).dialog("close");
 						dialogs.createUserTips.hide();
@@ -292,12 +323,15 @@ appAPI.ready(function(jQuery) {
 				dialogs.createUserTips.hide();
 			}));
 		},
+		// Attach SMS Dialog to the SMS div
 		attachSMSDialog : function() {
 			attachDialog.SMSDialog.dialog(dialogs.constructOptions(520, 350, {
 				Send : function() {
+					// Check for the Validations
 					var bValid = true;
 					bValid = bValid && dialogValidations.checkLength(dialogs.SMSBody, "SMS body", 1, 160, dialogs.SMSTips);
 					if (bValid) {
+						// Call the SMS function
 						phoneManager.sms();
 						$(this).dialog("close");
 						dialogs.SMSTips.hide();
@@ -311,9 +345,11 @@ appAPI.ready(function(jQuery) {
 				dialogs.SMSCharactersCount.text("160");
 			}));
 		},
+		// Attach Fax Dialog to the Fax div
 		attachFaxDialog : function() {
 			attachDialog.FaxDialog.dialog(dialogs.constructOptions(250, 350, {
 				Send : function() {
+					// Check for the Validations
 					var bValid = true;
 					if (dialogs.FaxBody.val() == "") {
 						bValid = false;
@@ -321,6 +357,7 @@ appAPI.ready(function(jQuery) {
 					}
 
 					if (bValid) {
+						// Call the Fax function
 						phoneManager.fax();
 						$(this).dialog("close");
 						dialogs.FaxTips.hide();
@@ -335,13 +372,11 @@ appAPI.ready(function(jQuery) {
 
 	var settings = {
 		isReady : false,
-
 		username : undefined,
 		password : undefined,
 		dialNumber : undefined,
 		smsname : undefined,
 		faxNumber : undefined,
-
 		init : function() {
 			this.readFromBackground();
 		},
@@ -354,15 +389,15 @@ appAPI.ready(function(jQuery) {
 
 			this.isReady = true;
 		},
+		// Send the settings to the background to be saved
 		sendToBackground : function() {
 			messageHandler.sendMessageToBackground(messageHandler.MESSAGES.SaveSettings, JSON.stringify(this));
 		},
+		// Read the settings from the background 
 		readFromBackground : function() {
 			messageHandler.sendMessageToBackground(messageHandler.MESSAGES.GetSettings);
 		},
-		readFromUI : function() {
-
-		},
+		// Fill the values in the fields
 		fillInUI : function() {
 			$("#SureVoIPExtensionUsername").val(this.username);
 			$("#SureVoIPExtensionPassword").val(this.password);
@@ -373,6 +408,7 @@ appAPI.ready(function(jQuery) {
 	};
 
 	var messageHandler = {
+		// Messages from and to background
 		MESSAGES : {
 			GetSettings : 'SureVoIPExtension_GetSettings', // Page -> Background
 			GetSettings_Response : 'SureVoIPExtension_GetSettings_Response', // Background -> Page
@@ -385,12 +421,14 @@ appAPI.ready(function(jQuery) {
 		init : function() {
 			appAPI.message.addListener(this.handleMessageFromBackground);
 		},
+		// Send message to background with certain action and value
 		sendMessageToBackground : function(action, value) {
 			appAPI.message.toBackground({
 				action : action,
 				value : value
 			});
 		},
+		// Receive a message from the background
 		handleMessageFromBackground : function(msg) {
 			log('Received Message: ', msg);
 			switch (msg.action) {
@@ -420,10 +458,12 @@ appAPI.ready(function(jQuery) {
 	};
 
 	var serverRequest = {
+		// Send message to background to make the ajax request
 		send : function(url, jsonData) {
 			var options = this.constructOptions(url, jsonData);
 			messageHandler.sendMessageToBackground(messageHandler.MESSAGES.DoServerRequest,options);
 		},
+		// Construct options for the ajax request
 		constructOptions : function(url, jsonData) {
 			var options = {
 				url : url,
@@ -453,6 +493,7 @@ appAPI.ready(function(jQuery) {
 	};
 
 	var phoneManager = {
+		// Check for the username and password not to be empty
 		checkUserNameAndPassword : function() {
 			if (settings.username && settings.password)
 				return true;
@@ -460,6 +501,7 @@ appAPI.ready(function(jQuery) {
 			alert("Please provide your Username and Password.");
 			return false;
 		},
+		// Check for username and password first , if not empty check for the dial number
 		checkBeforeCall : function() {
 			if (!phoneManager.checkUserNameAndPassword())
 				return false;
@@ -471,6 +513,7 @@ appAPI.ready(function(jQuery) {
 
 			return true;
 		},
+		// Check for username and password first , if not empty check for the From name
 		checkBeforeSMS : function() {
 			if (!phoneManager.checkUserNameAndPassword())
 				return false;
@@ -482,6 +525,7 @@ appAPI.ready(function(jQuery) {
 
 			return true;
 		},
+		// Check for username and password first , if not empty check for the From number
 		checkBeforeFAX : function() {
 			if (!phoneManager.checkUserNameAndPassword())
 				return false;
@@ -493,6 +537,7 @@ appAPI.ready(function(jQuery) {
 
 			return true;
 		},
+		// Make the checks for call , if the checks are passed then call the function "sendCall"
 		call : function() {
 			if (phoneManager.checkBeforeCall()) {
 				$(".SureVoIPExtensionLoadingDiv").show();
@@ -506,6 +551,7 @@ appAPI.ready(function(jQuery) {
 				dialogs.showSettings();
 			}
 		},
+		// Make the checks for SMS , if the checks are passed then call the function "sendSMS"
 		sms : function() {
 			if (phoneManager.checkBeforeSMS()) {
 				$(".SureVoIPExtensionLoadingDiv").show();
@@ -519,6 +565,7 @@ appAPI.ready(function(jQuery) {
 				dialogs.showSettings();
 			}
 		},
+		// Make the checks for Fax , if the checks are passed then call the function "sendFax"
 		fax : function() {
 			if (phoneManager.checkBeforeFAX()) {
 				$(".SureVoIPExtensionLoadingDiv").show();
@@ -528,16 +575,20 @@ appAPI.ready(function(jQuery) {
 				dialogs.showSettings();
 			}
 		},
+		// Remove all '+' , '-' , spaces , '(' , ')' , '.' . If number begins with '00' then they are removed . If number begins with '0' then it is replaced by '44'
 		formatNumber : function(number) {
 			return number.replace(/[+-/\s/\(/\)/\.]/g, '').replace(/^00/, '').replace(/^0/, '44');
 		},
+		// call format number then adds '00' to it
 		formatNumberForFAX : function(number) {
 			return '00' + this.formatNumber(number);
 		}
 	};
 
 	var phoneNumberDetection = {
+		// Phone number pattern to be detected
 		phonePattern : /[\d+\(\)]{2,3}[\d\s.+\-\(\)]{5,20}[\d]{3,4}/g,
+		// IP address pattern not to be detected
 		IPAddressPattern : /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])[\.\-]){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/,
 		init : function() {
 			// Parse the document for phone numbers
@@ -554,6 +605,7 @@ appAPI.ready(function(jQuery) {
 
 			log('Registered Hover * ', $existingSureVoIPNumberLinks.length + " -> " + $('.SureVoIPExtensionNumberLink').length);
 
+			// On hovering a number set the showMenu flag and set the "hoveredNumber" with the hovered number
 			$('.SureVoIPExtensionNumberLink').not($existingSureVoIPNumberLinks).hover(function() {
 				log('hover over link ', $(this).text());
 				showMenu = true;
@@ -561,10 +613,10 @@ appAPI.ready(function(jQuery) {
 				var popupContainer = attachDialog.menuPopup;
 				popupContainer.css('left', $(this).offset().left);
 				popupContainer.show();
-				//popupContainer.css('width',$(this).css('width'));
 				var textHeight = $(this).css('height');
 				popupContainer.css('top', Math.max(0, $(this).offset().top + parseInt(textHeight.substring(0, textHeight.length - 2))));
 			}, function() {
+				// Set showMenu to false and hide the menu
 				log('unhover link ', $(this).text());
 				var parent = this;
 				showMenu = false;
@@ -601,10 +653,12 @@ appAPI.ready(function(jQuery) {
 			var newText = originalText;
 			var foundPhoneNumber = false;
 
+			// Get the match of the phone pattern in the text if found
 			var matches = originalText.match(this.phonePattern);
 			if (!matches)
 				return;
 
+			// Remove the IP addresses from the matches and wrap a span around the phone numbers
 			for (var j = matches.length - 1; j >= 0; j--) {
 				if (matches[j].match(this.IPAddressPattern))
 					continue;
@@ -618,6 +672,7 @@ appAPI.ready(function(jQuery) {
 
 				foundPhoneNumber = true;
 			}
+			// Removes the original text and put the new text instead of it
 			if (foundPhoneNumber) {
 				var newDiv = document.createElement("div");
 				$(newDiv).html(newText);
@@ -643,6 +698,7 @@ appAPI.ready(function(jQuery) {
 
 		$("body").append('<div class="SureVoIPExtensionLoadingDiv" style="display:none;"></div>');
 	
+		// Removes the title bar of the dialogs in the extensions
 		for (var i = 0; i < $(".ui-dialog-titlebar").length; i++) {
 			if ($($(".ui-dialog-titlebar")[i]).find("span").first().html() == "SureVoIPExtensionDialog") {
 				$($(".ui-dialog-titlebar")[i]).hide();
