@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (c) 2013, Suretec Systems Ltd. L<http://www.suretecsystems.com/>
+Copyright (c) 2013, Suretec Systems Ltd. <http://www.suretecsystems.com/>
 
 This file is part of the SureVoIP Browser Plugin
 
