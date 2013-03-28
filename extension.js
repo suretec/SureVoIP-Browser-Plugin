@@ -577,7 +577,20 @@ appAPI.ready(function(jQuery) {
 		},
 		// Remove all '+' , '-' , spaces , '(' , ')' , '.' . If number begins with '00' then they are removed . If number begins with '0' then it is replaced by '44'
 		formatNumber : function(number) {
-			return number.replace(/[+-/\s/\(/\)/\.]/g, '').replace(/^00/, '').replace(/^0/, '44');
+			
+			// Replace +44 (0) with 44
+			number = number.replace(/^\s*[+-/\.]*\s*44[ /\(]+0[ /\)]+/g, '44');
+			
+			// Remove all unwanted characters
+			number = number.replace(/[+-/\s/\(/\)/\.]/g, '');
+			
+			// Remove international 00
+			number = number.replace(/^00/, '');
+			
+			// Replace leading 0 with 44
+			number = number.replace(/^0/, '44');
+			
+			return number;
 		},
 		// call format number then adds '00' to it
 		formatNumberForFAX : function(number) {
