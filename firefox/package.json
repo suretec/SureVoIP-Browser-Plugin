@@ -1,0 +1,13 @@
+{
+  "title": "SureVoIP Call/Fax/SMS Browser Add-on",
+  "name": "SureVoIP Call/Fax/SMS Browser Add-on",
+  "version": "2.0.2",
+  "description": "",
+  "main": "index.js",
+  "author": "SureVoIP",
+  "icon":"resource://@surevoip/data/BrowserButton.png",
+  "engines": {
+    "firefox": ">=38.0a1"
+  },
+  "license": "GPLv3"
+}

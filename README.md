@@ -2,15 +2,14 @@ The SureVoIP Browser Plugin allows SureVoIP customers to click to call any numbe
 
 It is powered by the SureVoIP API - http://www.surevoip.co.uk/api with more information available at http://www.surevoip.co.uk/addons
 
-It uses the Crossrider framework - http://crossrider.com and works on:
+It works on:
 
 * Google Chrome
-* Microsoft Internet Explorer
-* Apple Safari
 * Mozilla Firefox
 
+and is available via the Chrome Store and Mozilla Firefox Add-ons
 
-Copyright (c) 2013, Suretec Systems Ltd. <http://www.suretecsystems.com/>
+Copyright (c) 2016, Suretec Systems Ltd. <http://www.suretecsystems.com/>
 
 This file is part of the SureVoIP Browser Plugin
 
