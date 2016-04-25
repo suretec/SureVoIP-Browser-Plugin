@@ -1,8 +1,8 @@
 {
   "title": "SureVoIP Call/Fax/SMS Browser Add-on",
   "name": "SureVoIP Call/Fax/SMS Browser Add-on",
-  "version": "2.0.2",
-  "description": "",
+  "version": "2.0.3",
+  "description": "It allows you to 'Click to Call' any number on the page and send SMS messages.",
   "main": "index.js",
   "author": "SureVoIP",
   "icon":"resource://@surevoip/data/BrowserButton.png",
