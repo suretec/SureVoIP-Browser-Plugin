@@ -9,7 +9,7 @@ It works on:
 
 and is available via the Chrome Store and Mozilla Firefox Add-ons
 
-Copyright (c) 2016, Suretec Systems Ltd. <http://www.suretecsystems.com/>
+Copyright (c) 2012-2020, Suretec Systems Ltd. <http://www.suretecsystems.com/>
 
 This file is part of the SureVoIP Browser Plugin
 
