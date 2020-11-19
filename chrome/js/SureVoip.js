@@ -86,19 +86,15 @@ var dialogs = {
     password: undefined,
     dialNumber: undefined,
     smsname: undefined,
-    faxNumber: undefined,
     allCreateUserFields: undefined,
     createUserTips: undefined,
     SMSBody: undefined,
     SMSTips: undefined,
     SMSCharactersCount: undefined,
-    FaxBody: undefined,
-    FaxTips: undefined,
     init: function () {
         console.log(`dialogs.init:`);
         this.constructSettings();
         this.constructSMS();
-        this.constructFax();
         this.constructMenu();
         this.createFadeDiv();
 
@@ -129,11 +125,6 @@ var dialogs = {
         tempString += '	<label for="SureVoIPExtensionSMSName" class="SureVoIPExtensionDialogAttributeLabel">From Name</label>';
         tempString += '	<input title="Mobile number or company name" type="text" name="SureVoIPExtensionSMSName" id="SureVoIPExtensionSMSName" value=""  />';
         tempString += '</div>';
-        tempString += '<div class="SureVoIPExtensionDialogHeader">Fax Settings</div>';
-        tempString += '<div class="SureVoIPExtensionDialogAttribute" >';
-        tempString += '	<label for="SureVoIPExtensionFaxNumber" class="SureVoIPExtensionDialogAttributeLabel">From Number</label>';
-        tempString += '	<input title="Your fax number" type="text" name="SureVoIPExtensionFaxNumber" id="SureVoIPExtensionFaxNumber" value=""  />';
-        tempString += '</div>';
         tempString += '<p class="SureVoIPExtensionDialogAttribute SureVoIPExtensionValidateTips"></p>';
         tempString += '<div class="SureVoIPExtensionDialogButtonContainer">';
         tempString += ' <input type="button" value="Save" class="SureVoIPExtensionDialogButton" id="SureVoIPExtensionSaveSettings">'
@@ -145,8 +136,7 @@ var dialogs = {
         dialogs.password = $("#SureVoIPExtensionPassword");
         dialogs.dialNumber = $("#SureVoIPExtensionDialNumber");
         dialogs.smsname = $("#SureVoIPExtensionSMSName");
-        dialogs.faxNumber = $("#SureVoIPExtensionFaxNumber");
-        dialogs.allCreateUserFields = $([]).add(dialogs.username).add(dialogs.password).add(dialogs.dialNumber).add(dialogs.smsname).add(dialogs.faxNumber);
+        dialogs.allCreateUserFields = $([]).add(dialogs.username).add(dialogs.password).add(dialogs.dialNumber).add(dialogs.smsname);
         dialogs.createUserTips = $(".SureVoIPExtensionValidateTips");
 
 
@@ -180,58 +170,14 @@ var dialogs = {
         dialogs.SMSBodyAttachEvent();
 
     },
-    // construct HTML of the Fax dialog and add it to the page
-    constructFax: function () {
-        var tempString = '<form id="SureVoIPExtensionFAXDialog" style="display:none;" enctype="multipart/form-data" class="SureVoIPExtensionDialog">';
-        tempString += '<div class="SureVoIPExtensionDialogTitleDiv"><b>SureVoIP</b> FAX</div>';
-        tempString += '<div class="SureVoIPExtensionDialogAttribute" >';
-        tempString += '	<label class="SureVoIPExtensionSMSLabel">To: </label>';
-        tempString += '	<label id="SureVoIPExtensionFAXToLabel" class="SureVoIPExtensionSMSLabel"></label>';
-        tempString += '</div>';
-        tempString += '<input id="SureVoIPExtensionFAXToValue" name="to" type="hidden"/><input id="SureVoIPExtensionFaxFrom" name="from" type="hidden"/>';
-        tempString += '<div class="SureVoIPExtensionDialogAttribute" >';
-        tempString += '	<label for="SureVoIPExtensionFaxBody" class="SureVoIPExtensionSMSLabel">FAX body</label>';
-        tempString += '	<div class="SureVoIPExtensionFaxBody_FileInputContainer">';
-        tempString += '		<input type="file" name="file" id="SureVoIPExtensionFaxBody" accept=".pdf,.tiff,.html,.htm,.txt" />';
-        tempString += '		<div class="SureVoIPExtensionFaxBody_FakeFile">';
-        tempString += '			<input type="text" />';
-        tempString += '			<button type="button" id="SureVoIPExtensionChooseFaxFile"><span>Choose File</span></button>';
-        tempString += '		</div>';
-        tempString += '	</div>';
-        tempString += '</div>';
-        tempString += '<p class="SureVoIPExtensionDialogAttribute SureVoIPExtensionValidateFaxTips" style="display:none;"></p>';
-        tempString += ' <div class="SureVoIPExtensionDialogButtonContainer">';
-        tempString += '  <input type="button" value="Send" class="SureVoIPExtensionDialogButton" id="SureVoIPExtensionSendFax"/>';
-        tempString += '  <input type="button" value="Cancel" class="SureVoIPExtensionDialogButton"/>';
-        tempString += ' </div>';
-        tempString += '</form>';
-
-        $('body').append(tempString);
-
-        //When a file is selected set the value to the Textbox appearing in the UI
-        $('#SureVoIPExtensionFaxBody').change(function () {
-            var fileLocation = this.value;
-            if (fileLocation.indexOf('\\') > 0)
-                fileLocation = this.value.substring(this.value.lastIndexOf('\\') + 1);
-            $('.SureVoIPExtensionFaxBody_FakeFile input[type=text]').val(fileLocation);
-        });
-        $("#SureVoIPExtensionChooseFaxFile").click(function(){
-            $("#SureVoIPExtensionFaxBody").click();
-        });
-        
-        dialogs.FaxBody = $('#SureVoIPExtensionFaxBody');
-        dialogs.FaxTips = $(".SureVoIPExtensionValidateFaxTips");
-
-    },
     // construct HTML of the Menu and add it to the page
     constructMenu: function () {
         var popupContainer = "<div id='SureVoIPExtensionPopupContainer' style='display:none;'>";
         popupContainer += "<div id='SureVoIPExtensionImgContainer'>";
-        popupContainer += "<img id='SureVoIPExtensionImg'  src='" + chrome.extension.getURL("images/surevoip_logo.png") + "' height='22px'/>";
+        popupContainer += "<img id='SureVoIPExtensionImg'  src='" + chrome.extension.getURL("images/surevoip-logo-white.svg") + "'/>";
         popupContainer += "</div>";
-        popupContainer += "<a id='SureVoIPExtensionCallBtn' href='javascript:void(0);'><div class='SureVoIPExtensionMenuItemContainer'><img src='" + chrome.extension.getURL("images/phone-alt.svg") + "' height='18px'/> Call this</div></a>";
-        popupContainer += "<a id='SureVoIPExtensionSMSBtn' href='javascript:void(0);'><div class='SureVoIPExtensionMenuItemContainer'><img src='" + chrome.extension.getURL("images/comments.svg") + "' height='18px'/> Text this</div></a>";
-        popupContainer += "<a id='SureVoIPExtensionFAXBtn' href='javascript:void(0);'><div class='SureVoIPExtensionMenuItemContainer'><img src='" + chrome.extension.getURL("images/fax.svg") + "' height='18px'/> Fax this</div></a>";
+        popupContainer += "<a id='SureVoIPExtensionCallBtn' href='javascript:void(0);'><div class='SureVoIPExtensionMenuItemContainer'><img src='" + chrome.extension.getURL("images/phone-alt.svg") + "' height='18px'/> Call</div></a>";
+        popupContainer += "<a id='SureVoIPExtensionSMSBtn' href='javascript:void(0);'><div class='SureVoIPExtensionMenuItemContainer'><img src='" + chrome.extension.getURL("images/comments.svg") + "' height='18px'/> Text</div></a>";
         popupContainer += "<a id='SureVoIPExtensionSettingsBtn' href='javascript:void(0);'><div class='SureVoIPExtensionSettingsMenuItemContainer'><img src='" + chrome.extension.getURL("images/cogs.svg") + "' height='18px'/> Settings</div></a>";
         popupContainer += "</div>";
         $("body").append(popupContainer);
@@ -261,12 +207,6 @@ var dialogs = {
             $("#SureVoIPExtensionSMSTo").text(hoveredNumber);
 
             dialogs.showDialog(attachDialog.SMSDialog);
-        });
-        $("#SureVoIPExtensionFAXBtn").click(function () {
-            dialogs.FaxBody.val("");
-            $("#SureVoIPExtensionFAXToLabel").text(hoveredNumber);
-
-            dialogs.showDialog(attachDialog.FaxDialog);
         });
         $("#SureVoIPExtensionSettingsBtn").click(function () {
             PostSaveAction = null;
@@ -309,30 +249,24 @@ var dialogs = {
 var attachDialog = {
     settingDialog: undefined,
     SMSDialog: undefined,
-    FaxDialog: undefined,
     menuPopup: undefined,
     init: function () {
         this.settingDialog = $("#SureVoIPExtensionDialog");
         this.SMSDialog = $("#SureVoIPExtensionSMSDialog");
-        this.FaxDialog = $("#SureVoIPExtensionFAXDialog");
         this.menuPopup = $('#SureVoIPExtensionPopupContainer');
         this.attachCancelEvent();
         this.attachSaveSettingsEvent();
         this.attachSendSMSEvent();
-        this.attachSendFaxEvent();
     },
     attachCancelEvent: function () {
         $(".SureVoIPExtensionDialogButtonContainer input[value=Cancel]").click(function () {
             //hide all tips 
             dialogs.createUserTips.hide();
             dialogs.SMSTips.hide();
-            dialogs.FaxTips.hide();
             //rest SMS characters counter
             $("#SureVoIPExtensionSMSCharactersCount").text(160);
             $('.SureVoIPExtensionDialog').hide(); // Hide Any Dialog
             $('#SureVoIPExtensionDialogBackDiv').hide();
-            //Clear fax body
-            $('.SureVoIPExtensionFaxBody_FakeFile [type=text]').val('');
         });
     },
     attachSaveSettingsEvent: function () {
@@ -353,8 +287,7 @@ var attachDialog = {
                     'username': dialogs.username.val(),
                     'password': dialogs.password.val(),
                     'smsname': dialogs.smsname.val(),
-                    'dialNumber': dialogs.dialNumber.val(),
-                    'faxNumber': dialogs.faxNumber.val()
+                    'dialNumber': dialogs.dialNumber.val()
                 });
                 // Send new settings to the background
                 //settings.sendToBackground();
@@ -384,24 +317,6 @@ var attachDialog = {
 
             }
         });
-    },
-    attachSendFaxEvent: function () {
-        $("#SureVoIPExtensionSendFax").click(function () {
-            // Check for the Validations
-            var bValid = true;
-            if (dialogs.FaxBody.val() == "") {
-                bValid = false;
-                alert("Please choose a file.");
-            }
-
-            if (bValid) {
-                $("#SureVoIPExtensionFAXDialog").hide();
-                dialogs.FaxTips.hide();
-                $("#SureVoIPExtensionDialogBackDiv").hide();
-                // Call the Fax function
-                phoneManager.fax();
-            }
-        });
     }
 };
 
@@ -411,8 +326,7 @@ var settings = {
         username: '',
         password: '',
         dialNumber: '',
-        smsname: '',
-        faxNumber: ''
+        smsname: ''
     },
     init: function () {
         //this.readFromBackground();
@@ -432,11 +346,6 @@ var settings = {
         for (var key in this.data) {
             this[key] = this.data[key];
         }
-        //this.username = newSettings.username;
-        //this.password = newSettings.password;
-        //this.dialNumber = newSettings.dialNumber;
-        //this.smsname = newSettings.smsname;
-        //this.faxNumber = newSettings.faxNumber;
         this.isReady = true;
     },
     update: function (data) {
@@ -451,7 +360,6 @@ var settings = {
         $("#SureVoIPExtensionPassword").val(this.password);
         $("#SureVoIPExtensionSMSName").val(this.smsname);
         $("#SureVoIPExtensionDialNumber").val(this.dialNumber);
-        $("#SureVoIPExtensionFaxNumber").val(this.faxNumber);
     }
 
 };
@@ -459,13 +367,9 @@ var settings = {
 var messageHandler = {
     // Messages from and to background
     MESSAGES: {
-        GetSettings: 'SureVoIPExtension_GetSettings', // Page -> Background
-        GetSettings_Response: 'SureVoIPExtension_GetSettings_Response', // Background -> Page
         SaveSettings: 'SureVoIPExtension_SaveSettings', // Page -> Background
         OpenSettingsDialog: 'SureVoIPExtension_OpenSettingsDialog', // Background -> Page
-        DoServerRequest: 'SureVoIPExtension_DoServerRequest', // Page->Background
-        AjaxSuccess: 'SureVoIPExtension_AjaxSuccess', // Background->Page
-        AjaxError: 'SureVoIPExtension_AjaxError' // Background->Page
+        DoServerRequest: 'SureVoIPExtension_DoServerRequest' // Page->Background
     },
     init: function () {
         //appAPI.message.addListener(this.handleMessageFromBackground);
@@ -491,22 +395,6 @@ var messageHandler = {
         switch (msg.action) {
             case messageHandler.MESSAGES.OpenSettingsDialog:
                 dialogs.showSettings();
-                break;
-            case messageHandler.MESSAGES.AjaxSuccess:
-                if (msg.value.status == 202) {
-                    $(".SureVoIPExtensionLoadingDiv").css("background-image", "url('" + chrome.extension.getURL("images/RequestSent.png") + "')");
-                    $(".SureVoIPExtensionLoadingDiv").fadeOut(3000, function () {
-                        $(".SureVoIPExtensionLoadingDiv").css("background-image", "url('" + chrome.extension.getURL("images/SendingRequest.png") + "')");
-                    });
-                } else {
-                    alert("SureVoIP \nServer responded with error code: " + msg.value.status);
-                    $(".SureVoIPExtensionLoadingDiv").hide();
-                }
-                break;
-            case messageHandler.MESSAGES.AjaxError:
-
-                alert("SureVoIP \nError sending request to the server.\nError message: " + msg.value.statusText);
-                $(".SureVoIPExtensionLoadingDiv").hide();
                 break;
         }
     }
@@ -548,34 +436,6 @@ var serverRequest = {
         }
         return options;
     },
-    constructOptionsForFax: function (url, jsonData) {
-        var options = {
-            url: url,
-            type: "POST",
-            cache: false,
-            dataType: "json",
-            error: function (response) {
-                alert("SureVoIP \nError sending request to the server.\nError message: " + response.statusText);
-                $(".SureVoIPExtensionLoadingDiv").hide();
-            },
-            success: function (response) {
-                if (response.status == 202) {
-                    $(".SureVoIPExtensionLoadingDiv").css("background-image", "url('" + chrome.extension.getURL("images/RequestSent.png") + "')");
-                    $(".SureVoIPExtensionLoadingDiv").fadeOut(3000, function () {
-                        $(".SureVoIPExtensionLoadingDiv").css("background-image", "url('" + chrome.extension.getURL("images/SendingRequest.png") + "')");
-                    });
-                } else {
-                    alert("SureVoIP \nServer responded with error code: " + response.status);
-                    $(".SureVoIPExtensionLoadingDiv").hide();
-                }
-            }
-        };
-        if (jsonData) {
-            options.data = JSON.stringify(jsonData, undefined);
-            options.contentType = "application/json";
-        }
-        return options;
-    },
     sendCall: function (jsonData) {
         this.send('https://api.surevoip.co.uk/calls', jsonData);
     },
@@ -583,15 +443,6 @@ var serverRequest = {
         this.send('https://api.surevoip.co.uk/sms', jsonData);
 
     },
-    sendFax: function (from, to) {
-
-        $("#SureVoIPExtensionFAXToValue").val(to);
-        $("#SureVoIPExtensionFaxFrom").val(from);
-        // var options = this.constructOptions('https://api.surevoip.co.uk/faxes');
-        var options = this.constructOptionsForFax('https://api.surevoip.co.uk/faxes');
-        $('#SureVoIPExtensionFAXDialog').ajaxForm(options);
-        $('#SureVoIPExtensionFAXDialog').submit();
-    }
 };
 
 var phoneManager = {
@@ -627,18 +478,6 @@ var phoneManager = {
 
         return true;
     },
-    // Check for username and password first , if not empty check for the From number
-    checkBeforeFAX: function () {
-        if (!phoneManager.checkUserNameAndPassword())
-            return false;
-
-        if (!settings.faxNumber) {
-            alert('Please provide your "From Number" in the Fax Settings section.');
-            return false;
-        }
-
-        return true;
-    },
     // Make the checks for call , if the checks are passed then call the function "sendCall"
     call: function () {
         if (phoneManager.checkBeforeCall()) {
@@ -667,19 +506,6 @@ var phoneManager = {
             dialogs.showSettings();
         }
     },
-    // Make the checks for Fax , if the checks are passed then call the function "sendFax"
-    fax: function () {
-
-        if (phoneManager.checkBeforeFAX()) {
-            $(".SureVoIPExtensionLoadingDiv").show();
-            serverRequest.sendFax(phoneManager.formatNumberForFAX(settings.faxNumber), phoneManager.formatNumberForFAX(settings.faxNumber));
-
-        } else {
-
-            PostSaveAction = phoneManager.fax;
-            dialogs.showSettings();
-        }
-    },
     // Remove all '+' , '-' , spaces , '(' , ')' , '.' . If number begins with '00' then they are removed . If number begins with '0' then it is replaced by '44'
     formatNumber: function (number) {
 
@@ -696,10 +522,6 @@ var phoneManager = {
         number = number.replace(/^0/, '44');
 
         return number;
-    },
-    // call format number then adds '00' to it
-    formatNumberForFAX: function (number) {
-        return '00' + this.formatNumber(number);
     }
 };
 
@@ -757,7 +579,7 @@ var phoneNumberDetection = {
         if (node.classList && node.classList.contains('SureVoIPExtensionNumberLink'))
             return;
 
-        if (node.id == 'SureVoIPExtensionDialog' || node.id == 'SureVoIPExtensionSMSDialog' || node.id == 'SureVoIPExtensionFAXDialog' || node.id == 'SureVoIPExtensionPopupContainer')
+        if (node.id == 'SureVoIPExtensionDialog' || node.id == 'SureVoIPExtensionSMSDialog' || node.id == 'SureVoIPExtensionPopupContainer')
             return;
 
         if (node.nodeType == 3) {

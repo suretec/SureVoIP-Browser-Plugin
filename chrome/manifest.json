@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "SureVoIP",
-	"description": "SureVoIP Call/Fax/SMS Browser Add-on",
+	"description": "SureVoIP Call and SMS Browser Add-on",
 	"version": "2.0.2",
 	"author": "SureVoIP",
 	"browser_action": {
@@ -23,7 +23,6 @@
 			],
 			"js": [
 				"js/jquery-3.5.1.min.js",
-				"js/jquery.form.min.js",
 				"js/SureVoip.js"
 			]
 		}
