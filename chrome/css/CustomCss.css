@@ -48,6 +48,8 @@
 	border-top: #33b5e1 1px solid;
 	border-bottom: #0092c3 1px solid;
 	padding: 6px;
+	padding-right: 30px;
+	text-align: right;
 }
 .SureVoIPExtensionMenuItemContainer:hover {
 	background-color: #12c729;
@@ -57,6 +59,8 @@
 #SureVoIPExtensionImgContainer {
 	background-color: #2092ED;
 	padding: 8px;
+	border-top-right-radius: 20px;
+	border-top-left-radius: 20px;
 }
 #SureVoIPExtensionImg {
 	width: 100%;
@@ -77,6 +81,8 @@
 .SureVoIPExtensionSettingsMenuItemContainer {
 	background-color: #9a9a9a;
 	padding: 7px;
+	padding-right: 30px;
+	text-align: right;
 	border-bottom-right-radius: 20px;
 	border-bottom-left-radius: 20px;
 }
