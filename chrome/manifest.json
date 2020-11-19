@@ -12,7 +12,8 @@
 		"default_title": "SureVoIP"
 	},
 	"permissions": [
-		"*://api.surevoip.co.uk/*",
+		"https://api.surevoip.co.uk/calls",
+		"https://api.surevoip.co.uk/sms",
 		"storage"
 	],
 	"content_scripts": [
