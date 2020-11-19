@@ -5,25 +5,42 @@
 	"version": "2.0.2",
 	"author": "SureVoIP",
 	"browser_action": {
-		"default_icon": "images/BrowserButton.png",
-        "default_title": "SureVoIP"
-    },
+		"default_icon": {
+			"16": "images/icon-16.png",
+			"32": "images/icon-32.png"
+		},
+		"default_title": "SureVoIP"
+	},
 	"permissions": [
-		"http://*/*","https://*/*","tabs",
-                "cookies","notifications","contextMenus",
-                "webNavigation","webRequest","webRequestBlocking",
-                "unlimitedStorage","storage","activeTab"
+		"*://api.surevoip.co.uk/*",
+		"storage"
 	],
-	"content_scripts": [{
-		"matches": ["*://*/*"],
-		"css": ["css/CustomCss.css"],
-		"js": ["js/jquery-1.11.1.min.js", "js/SureVoip.js","js/jquery.form.js"]
-	}],
+	"content_scripts": [
+		{
+			"matches": [ "*://*/*" ],
+			"css": [
+				"css/CustomCss.css"
+			],
+			"js": [
+				"js/jquery-3.5.1.min.js",
+				"js/jquery.form.min.js",
+				"js/SureVoip.js"
+			]
+		}
+	],
 	"web_accessible_resources": [
-		"images/*.png","images/*.jpg"
+		"images/*"
 	],
-        "icons":{"48":"images/BrowserButton.png"},
+	"icons": {
+		"16": "images/icon-16.png",
+		"32": "images/icon-32.png",
+		"48": "images/icon-48.png",
+		"128": "images/icon-128.png"
+	},
 	"background": {
-		"scripts": ["js/background.js","js/jquery-1.11.1.min.js"]
+		"scripts": [
+			"js/jquery-3.5.1.min.js",
+			"js/background.js"
+		]
 	}
 }

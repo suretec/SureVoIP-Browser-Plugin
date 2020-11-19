@@ -54,6 +54,9 @@
 	border-top: #41d254 1px solid;
 	border-bottom: #10b226 1px solid;
 }
+#SureVoIPExtensionImgContainer {
+	background-color: #2092ED;
+}
 #SureVoIPExtensionImg {
 	padding: 8px;
 }

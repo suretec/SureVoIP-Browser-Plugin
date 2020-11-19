@@ -95,6 +95,7 @@ var dialogs = {
     FaxBody: undefined,
     FaxTips: undefined,
     init: function () {
+        console.log(`dialogs.init:`);
         this.constructSettings();
         this.constructSMS();
         this.constructFax();
@@ -160,7 +161,7 @@ var dialogs = {
         tempString += '	</div>';
         tempString += '	<div class="SureVoIPExtensionDialogAttribute" >';
         tempString += '		<label class="SureVoIPExtensionSMSLabel" for="SureVoIPExtensionSMSBody">Message body</label>';
-        tempString += '		<textarea name="SureVoIPExtensionSMSBody" id="SureVoIPExtensionSMSBody"  />';
+        tempString += '		<textarea name="SureVoIPExtensionSMSBody" id="SureVoIPExtensionSMSBody"/></textarea>';
         tempString += '	</div>';
         tempString += '	<div class="SureVoIPExtensionSMSCharactersCountAttribute" >';
         tempString += '		<label class="SureVoIPExtensionSMSLabel">Characters count left:</label>';
@@ -225,13 +226,13 @@ var dialogs = {
     // construct HTML of the Menu and add it to the page
     constructMenu: function () {
         var popupContainer = "<div id='SureVoIPExtensionPopupContainer' style='display:none;'>";
-        popupContainer += "<div>";
-        popupContainer += "<img id='SureVoIPExtensionImg'  src='" + chrome.extension.getURL("images/SureVoIP.jpg") + "' height='22px' width='112px'/>";
+        popupContainer += "<div id='SureVoIPExtensionImgContainer'>";
+        popupContainer += "<img id='SureVoIPExtensionImg'  src='" + chrome.extension.getURL("images/surevoip_logo.png") + "' height='22px'/>";
         popupContainer += "</div>";
-        popupContainer += "<a id='SureVoIPExtensionCallBtn' href='javascript:void(0);'><div class='SureVoIPExtensionMenuItemContainer'>Call this</div></a>";
-        popupContainer += "<a id='SureVoIPExtensionSMSBtn' href='javascript:void(0);'><div class='SureVoIPExtensionMenuItemContainer'>Text this</div></a>";
-        popupContainer += "<a id='SureVoIPExtensionFAXBtn' href='javascript:void(0);'><div class='SureVoIPExtensionMenuItemContainer'>Fax this</div></a>";
-        popupContainer += "<a id='SureVoIPExtensionSettingsBtn' href='javascript:void(0);'><div class='SureVoIPExtensionSettingsMenuItemContainer'>Settings</div></a>";
+        popupContainer += "<a id='SureVoIPExtensionCallBtn' href='javascript:void(0);'><div class='SureVoIPExtensionMenuItemContainer'><img src='" + chrome.extension.getURL("images/phone-alt.svg") + "' height='18px'/> Call this</div></a>";
+        popupContainer += "<a id='SureVoIPExtensionSMSBtn' href='javascript:void(0);'><div class='SureVoIPExtensionMenuItemContainer'><img src='" + chrome.extension.getURL("images/comments.svg") + "' height='18px'/> Text this</div></a>";
+        popupContainer += "<a id='SureVoIPExtensionFAXBtn' href='javascript:void(0);'><div class='SureVoIPExtensionMenuItemContainer'><img src='" + chrome.extension.getURL("images/fax.svg") + "' height='18px'/> Fax this</div></a>";
+        popupContainer += "<a id='SureVoIPExtensionSettingsBtn' href='javascript:void(0);'><div class='SureVoIPExtensionSettingsMenuItemContainer'><img src='" + chrome.extension.getURL("images/cogs.svg") + "' height='18px'/> Settings</div></a>";
         popupContainer += "</div>";
         $("body").append(popupContainer);
         popupContainer = document.getElementById('SureVoIPExtensionPopupContainer');
@@ -282,6 +283,7 @@ var dialogs = {
     },
     //Open settings dialog and call fillInUI to fill the data 
     showSettings: function () {
+        console.log(`showSettings: settings.isReady=${settings.isReady}`);
 
         this.showDialog(attachDialog.settingDialog);
         if (!settings.isReady)
@@ -355,7 +357,7 @@ var attachDialog = {
                     'faxNumber': dialogs.faxNumber.val()
                 });
                 // Send new settings to the background
-                settings.sendToBackground();
+                //settings.sendToBackground();
                 $('#SureVoIPExtensionDialog').hide();
                 $('#SureVoIPExtensionDialogBackDiv').hide();
                 dialogs.createUserTips.hide();
@@ -405,32 +407,46 @@ var attachDialog = {
 
 var settings = {
     isReady: false,
-    username: undefined,
-    password: undefined,
-    dialNumber: undefined,
-    smsname: undefined,
-    faxNumber: undefined,
-    init: function () {
-        this.readFromBackground();
+    data: {
+        username: '',
+        password: '',
+        dialNumber: '',
+        smsname: '',
+        faxNumber: ''
     },
-    update: function (newSettings) {
-        this.username = newSettings.username;
-        this.password = newSettings.password;
-        this.dialNumber = newSettings.dialNumber;
-        this.smsname = newSettings.smsname;
-        this.faxNumber = newSettings.faxNumber;
+    init: function () {
+        //this.readFromBackground();
+        chrome.storage.local.get('settings', function (data) {
+            console.log(`storage.local.get: data=${JSON.stringify(data)}`);
+            settings.sync(data.settings);
+        });
+        chrome.storage.onChanged.addListener(function(changes, area) {
+            if (area !== 'local' || !changes.settings) return;
+            console.log(`storage.onChanged: changes=${JSON.stringify(changes)}`);
+            settings.sync(changes.settings.newValue);
+        });
+    },
+    sync: function (data) {
+        this.data = Object.assign({}, this.data, data);
+        console.log(`settings.sync: this.data=${JSON.stringify(this.data)}`);
+        for (var key in this.data) {
+            this[key] = this.data[key];
+        }
+        //this.username = newSettings.username;
+        //this.password = newSettings.password;
+        //this.dialNumber = newSettings.dialNumber;
+        //this.smsname = newSettings.smsname;
+        //this.faxNumber = newSettings.faxNumber;
         this.isReady = true;
     },
-    // Send the settings to the background to be saved
-    sendToBackground: function () {
-        messageHandler.sendMessageToBackground(messageHandler.MESSAGES.SaveSettings, JSON.stringify(this, undefined));
-    },
-    // Read the settings from the background 
-    readFromBackground: function () {
-        messageHandler.sendMessageToBackground(messageHandler.MESSAGES.GetSettings);
+    update: function (data) {
+        if (!data) return;
+        console.log(`settings.update: data=${JSON.stringify(data)}`);
+        chrome.storage.local.set({'settings': Object.assign({}, this.data, data)});
     },
     // Fill the values in the fields
     fillInUI: function () {
+        console.log(`settings.fillInUI: username=${this.username}`);
         $("#SureVoIPExtensionUsername").val(this.username);
         $("#SureVoIPExtensionPassword").val(this.password);
         $("#SureVoIPExtensionSMSName").val(this.smsname);
@@ -456,15 +472,14 @@ var messageHandler = {
         chrome.runtime.onMessage.addListener(this.handleMessageFromBackground);
     },
     // Send message to background with certain action and value
-    sendMessageToBackground: function (action, value) {
+    sendMessageToBackground: function (action, value, callback) {
+        console.log(`sendMessageToBackground: action=${action}; value=${value}`);
 
-//        appAPI.message.toBackground({
-//            action: action,
-//            value: value
-//        });
+        //appAPI.message.toBackground({action: action, value: value });
 
         chrome.runtime.sendMessage({action: action, value: value}, function (response) {
-            //console.log(response.farewell);
+            console.log(`sendMessageToBackground-response: response=${JSON.stringify(response)}`);
+            callback(response);
         });
 
 
@@ -476,11 +491,6 @@ var messageHandler = {
         switch (msg.action) {
             case messageHandler.MESSAGES.OpenSettingsDialog:
                 dialogs.showSettings();
-                break;
-            case messageHandler.MESSAGES.GetSettings_Response:
-                if (msg.value != undefined) {
-                    settings.update(JSON.parse(msg.value));
-                }
                 break;
             case messageHandler.MESSAGES.AjaxSuccess:
                 if (msg.value.status == 202) {
@@ -506,7 +516,23 @@ var serverRequest = {
     // Send message to background to make the ajax request
     send: function (url, jsonData) {
         var options = this.constructOptions(url, jsonData);
-        messageHandler.sendMessageToBackground(messageHandler.MESSAGES.DoServerRequest, options);
+        messageHandler.sendMessageToBackground(messageHandler.MESSAGES.DoServerRequest, options, function(response) {
+            if (response.ok) {
+                if (response.data == 202) {
+                    $(".SureVoIPExtensionLoadingDiv").css("background-image", "url('" + chrome.extension.getURL("images/RequestSent.png") + "')");
+                    $(".SureVoIPExtensionLoadingDiv").fadeOut(3000, function () {
+                        $(".SureVoIPExtensionLoadingDiv").css("background-image", "url('" + chrome.extension.getURL("images/SendingRequest.png") + "')");
+                    });
+                } else {
+                    alert("SureVoIP \nServer responded with error code: " + response.data);
+                    $(".SureVoIPExtensionLoadingDiv").hide();
+                }
+            }
+            else {
+                alert("SureVoIP \nError sending request to the server.\nError message: " + response.data);
+                $(".SureVoIPExtensionLoadingDiv").hide();
+            }
+        });
     },
     // Construct options for the ajax request
     constructOptions: function (url, jsonData) {

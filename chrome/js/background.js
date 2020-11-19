@@ -17,76 +17,40 @@
  along with the SureVoIP Browser Plugin.  If not, see 
  <http://www.gnu.org/licenses/>.
  *************************************************************************************/
-var XHR;
-var JQXHR;
 
-   // When the user clicks the browser button
-    chrome.browserAction.onClicked.addListener(function (tab) {
-        chrome.tabs.sendMessage(tab.id,{action:'SureVoIPExtension_OpenSettingsDialog'},function(response){});
-        console.log(tab);
+// When the user clicks the browser button
+chrome.browserAction.onClicked.addListener(function (tab) {
+    console.log(`onClicked: tab=${JSON.stringify(tab)}`);
+    chrome.tabs.sendMessage(tab.id, {action:'SureVoIPExtension_OpenSettingsDialog'});
+});
 
-    });
-
-function sendMessageToAllTabs(action , msg){
-    chrome.tabs.query({}, function(tabs) {
-      var message = {action: action,value:msg};
-      for (var i=0; i<tabs.length; ++i) {
-         chrome.tabs.sendMessage(tabs[i].id, message);
-     }
-    });
-}
-
-
-    chrome.runtime.onMessage.addListener(
-      function(msg, sender, sendResponse) {
-        switch (msg.action) {
-            // Save the settings in the database and send them to all tabs to be updated
-            case 'SureVoIPExtension_SaveSettings':
-                chrome.storage.local.set({"settings": msg.value},function(){});
-                sendMessageToAllTabs('SureVoIPExtension_GetSettings_Response',msg.value);
-                break;
-                // Get the settings from the database and send them to all tabs to be updated
-            case 'SureVoIPExtension_GetSettings':
-                chrome.storage.local.get('settings', function (storage) {
-			sendMessageToAllTabs('SureVoIPExtension_GetSettings_Response',storage.settings);
-		});
-              
-                 break;
-                // Make the json request
-            case 'SureVoIPExtension_DoServerRequest':
-                 chrome.storage.local.get('settings', function (storage) {
-                    var settings = JSON.parse(storage.settings);
-                    //sendMessageToAllTabs('SureVoIPExtension_GetSettings',storage.settings);
-                    $.support.cors = true;
-                    // make encode64 before sending the request
-                     msg.value.beforeSend = function (xhr) {
+chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
+    console.log(`onMessage: msg=${JSON.stringify(msg)}`);
+    switch (msg.action) {
+        // Make the json request
+        case 'SureVoIPExtension_DoServerRequest':
+            chrome.storage.local.get('settings', function (storage) {
+                var settings = storage.settings;
+                $.support.cors = true;
+                // make encode64 before sending the request
+                msg.value.beforeSend = function (xhr) {
                     xhr.setRequestHeader("Authorization", "Basic " + encodingHelper.encode64(settings.username + ":" + settings.password));
                 };
-                // Send succes message to all tabs
+                // callback with success message
                 msg.value.success = function (data, textStatus, jqXHR) {
-                   // sendMessageToAllTabs('SureVoIPExtension_AjaxSuccess',jqXHR);
-                   JQXHR = jqXHR
-                    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-                        var message = {action: 'SureVoIPExtension_AjaxSuccess',value:JQXHR};
-                       chrome.tabs.sendMessage(tabs[0].id, message, function(response){});
-                    });
-
+                    sendResponse({ok: true, value: jqXHR.status});
                 };
-                // Send error message to all tabs
+                // callback with error message
                 msg.value.error = function (xhr, ajaxOptions, thrownError) {
-                 //sendMessageToAllTabs('SureVoIPExtension_AjaxError',xhr);
-                     XHR  = xhr;
-                  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-                   var message = {action: 'SureVoIPExtension_AjaxError',value:XHR};
-                       chrome.tabs.sendMessage(tabs[0].id, message, function(response){});
-                    });
+                    sendResponse({ok: false, value: xhr.statusText});
                 };
                 $.ajax(msg.value);
                         
             });
-                   break;
-        }
-      });
+            return true;
+        default:
+    }
+});
 
 
 // Class to encode the string to "encode64"
