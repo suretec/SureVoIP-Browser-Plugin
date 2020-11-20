@@ -570,9 +570,7 @@ var phoneNumberDetection = {
     },
     detectTextNodes: function (node) {
 
-        if (node.nodeName == "SCRIPT")
-            return;
-        if (node.nodeName == "TEXTAREA")
+        if (["SCRIPT", "STYLE", "TEXTAREA"].indexOf(node.nodeName) > -1)
             return;
 
         // Need to bypass elements we already processed. This is required since we do this every few seconds.
@@ -610,6 +608,7 @@ var phoneNumberDetection = {
             var matchIndexStart = originalText.lastIndexOf(matches[j]);
             var matchIndexEnd = matchIndexStart + matches[j].length;
             log('found match ', matchIndexStart, matchIndexEnd, matches[j]);
+            //console.log(`found match: originalText=${originalText}; j=${j}; matchIndexStart=${matchIndexStart}; matchIndexEnd=${matchIndexEnd}; matches[j]=${matches[j]}`);
             newText = newText.substring(0, matchIndexStart) + '<span class="SureVoIPExtensionNumberLink">' + matches[j] + '</span>' + newText.substring(matchIndexEnd);
             originalText = originalText.substring(0, matchIndexStart);
             foundPhoneNumber = true;
