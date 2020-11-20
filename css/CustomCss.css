@@ -1,0 +1,258 @@
+.SureVoIPExtensionDialog{
+	text-align:left;
+	position: fixed;
+	width: 350px;
+	height: auto;
+	display: block;
+	top: 50%;
+	left: 50%;
+	background-color:#EBF7F5;
+	z-index:90000005;
+	border-radius: 10px;
+}
+
+.SureVoIPExtensionDialog * {
+	box-sizing: content-box;
+}
+
+.SureVoIPExtensionDialog input[type=text],.SureVoIPExtensionDialog input[type=password]{
+	text-align: left;
+	padding: 1px;
+}
+
+.SureVoIPExtensionValidateTips, .SureVoIPExtensionValidateSMSTips, .SureVoIPExtensionValidateFAXTips {
+	font-family: arial;
+	font-size: 17px;
+	display: none;
+}
+.SureVoIPExtensionDialogAttribute textarea {
+	width: 100%;
+	margin-top: 7px;
+	height: 250px;
+	background: none !important;
+	background-color: white !important;
+}
+.SureVoIPExtensionDialogAttribute #FAXBody {
+	font-family: arial;
+	font-size: 14px;
+	width: 100%;
+	margin-top: 5px;
+}
+#SureVoIPExtensionPopupContainer a {
+	text-decoration: none;
+	color: white;
+	font: 14px arial;
+}
+.SureVoIPExtensionMenuItemContainer {
+	background-color: #00a3d9;
+	border-top: #33b5e1 1px solid;
+	border-bottom: #0092c3 1px solid;
+	padding: 6px;
+	padding-right: 30px;
+	text-align: right;
+}
+.SureVoIPExtensionMenuItemContainer:hover {
+	background-color: #12c729;
+	border-top: #41d254 1px solid;
+	border-bottom: #10b226 1px solid;
+}
+#SureVoIPExtensionImgContainer {
+	background-color: #2092ED;
+	padding: 8px;
+	border-top-right-radius: 20px;
+	border-top-left-radius: 20px;
+}
+#SureVoIPExtensionImg {
+	width: 100%;
+	height: 22px;
+}
+#SureVoIPExtensionPopupContainer {
+	border-radius: 20px;
+	height: 138px;
+	width: 132px;
+	text-align: center;
+	background-color: white;
+	position: absolute;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #9ddbf0;
+    z-index: 1000000;
+}
+.SureVoIPExtensionSettingsMenuItemContainer {
+	background-color: #9a9a9a;
+	padding: 7px;
+	padding-right: 30px;
+	text-align: right;
+	border-bottom-right-radius: 20px;
+	border-bottom-left-radius: 20px;
+}
+.SureVoIPExtensionSettingsMenuItemContainer:hover {
+	background-color: #10b226;
+}
+.SureVoIPExtensionDialogTitleDiv {
+	padding-left: 10px;
+	padding-top: 5px;
+	background-color: #00a2d9;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	height: 19px;
+	font: 14px arial;
+	color: white;
+}
+.SureVoIPExtensionDialogContainer {
+	padding: 0;
+	border-radius: 5px;
+	border: 1px #b2e1f1 solid;
+	background: none;
+	background-color: #ebf5f7;
+}
+.SureVoIPExtensionDialogContainer {
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	background: none;
+	border-top: 0;
+	padding: 0;
+}
+
+.SureVoIPExtensionDialogContainer  button:last-child {
+	margin-right: 0;
+}
+.SureVoIPExtensionDialogHeader {
+	background-color: #d9ebef;
+	height: 14px;
+	font: 12px arial;
+	color: #6aacbc;
+	padding: 5px 0 5px 10px;
+}
+.SureVoIPExtensionDialogAttribute {
+	padding: 10px;
+}
+
+.SureVoIPExtensionSMSCharactersCountAttribute {
+	padding-right: 10px;
+	/*float: right;*/
+	text-align: right;
+}
+
+.SureVoIPExtensionDialogAttributeLabel {
+	font: 12px arial;
+	color: #606261;
+	width: 30%;
+	display: block;
+	float: left;
+	padding-top: 7px;
+}
+
+.SureVoIPExtensionSMSLabel {
+	font: 12px arial;
+	color: #606261;
+}
+
+.SureVoIPExtensionDialogContainer {
+	float: none !important;
+	margin: 0 103px;
+}
+
+
+
+.SureVoIPExtensionLoadingDiv {
+	display: none;
+	position: fixed;
+	z-index: 1000000;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	/*background: rgba(102, 102, 102, 0.6) url(resource-image://SendingRequest.png) 50% 50%no-repeat;*/
+        //background: rgba(102, 102, 102, 0.6) url(/SendingRequest.png) 50% 50%no-repeat;
+}
+
+div.SureVoIPExtensionFaxBody_FileInputContainer {
+	position: relative;
+        height: 33px;
+}
+
+div.SureVoIPExtensionFaxBody_FakeFile {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 1;
+	font: 12px arial;
+}
+
+div.SureVoIPExtensionFaxBody_FakeFile button {
+	float: left;
+	padding: 0;
+	color: white;
+	
+	height: 29px;
+	width: 100px;
+	background: none;
+	background-color: rgb(0, 162, 217);
+	
+	border: none;
+	border-radius: 4px;
+	
+	margin: 0px 0px 5px 5px;
+}
+
+div.SureVoIPExtensionFaxBody_FakeFile input[type=text] {
+	float: left;
+	padding: 0;
+	height: 29px;
+	/*margin: 5px 5px 5px 0px;*/
+	width: 218px;
+}
+
+div.SureVoIPExtensionFaxBody_FakeFile input[type=file] {
+	width: 330px;
+}
+
+#SureVoIPExtensionFaxBody {
+	position: relative;
+	text-align: right;
+	-moz-opacity:0 ;
+	filter:alpha(opacity: 0);
+	opacity: 0;
+	z-index: 2;
+}
+
+.SureVoIPExtensionFadeDiv{
+	position: fixed;
+    top: 0%;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+    background-color: #666666;
+    z-index:90000004;
+    opacity:.70;
+    display: none;
+    
+}
+.SureVoIPExtensionDialogButtonContainer{
+	text-align: center;	
+	
+}
+
+.SureVoIPExtensionDialogButton{
+	background-color:#00a2d9;
+	color:#FFFFFF;
+	font: 12px arial;
+	height: 29px;
+	width: 68px;
+	border: 1px solid #cccccc;
+	border-radius: 6px;
+	margin: 0.5em 0.4em 0.5em 0px;
+	cursor:pointer; 
+	
+}
+.SureVoIPExtensionTipsHighLight{
+	
+	background-color:#FFE45C;		
+}
+
+.SureVoIPExtensionNumberLinkContainer{
+	display: inline !important;
+	overflow: hidden;
+	
+}
