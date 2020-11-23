@@ -178,7 +178,7 @@ var dialogs = {
         popupContainer += "</div>";
         popupContainer += "<a id='SureVoIPExtensionCallBtn' href='javascript:void(0);'><div class='SureVoIPExtensionMenuItemContainer'><img src='" + chrome.extension.getURL("images/phone-alt.svg") + "' height='18px'/> Call</div></a>";
         popupContainer += "<a id='SureVoIPExtensionSMSBtn' href='javascript:void(0);'><div class='SureVoIPExtensionMenuItemContainer'><img src='" + chrome.extension.getURL("images/comments.svg") + "' height='18px'/> Text</div></a>";
-        popupContainer += "<a id='SureVoIPExtensionSettingsBtn' href='javascript:void(0);'><div class='SureVoIPExtensionSettingsMenuItemContainer'><img src='" + chrome.extension.getURL("images/cogs.svg") + "' height='18px'/> Settings</div></a>";
+        popupContainer += "<a id='SureVoIPExtensionSettingsBtn' href='javascript:void(0);'><div class='SureVoIPExtensionMenuItemContainer SureVoIPExtensionSettingsMenuItemContainer'><img src='" + chrome.extension.getURL("images/cogs.svg") + "' height='18px'/> Settings</div></a>";
         popupContainer += "</div>";
         $("body").append(popupContainer);
         popupContainer = document.getElementById('SureVoIPExtensionPopupContainer');
