@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "SureVoIP",
 	"description": "SureVoIP Call and SMS Browser Add-on",
-	"version": "4.0.2",
+	"version": "4.0.3",
 	"author": "SureVoIP",
 	"browser_action": {
 		"default_icon": {
