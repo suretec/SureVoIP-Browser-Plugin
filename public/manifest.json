@@ -24,7 +24,7 @@
 			],
 			"js": [
 				"js/jquery-3.5.1.min.js",
-				"js/SureVoIP.js"
+				"js/content.js"
 			]
 		}
 	],
@@ -41,6 +41,7 @@
 		"scripts": [
 			"js/jquery-3.5.1.min.js",
 			"js/background.js"
-		]
+		],
+		"persistent": false
 	}
 }
