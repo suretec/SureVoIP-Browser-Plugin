@@ -2,6 +2,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import buble from '@rollup/plugin-buble';
 import copy from 'rollup-plugin-copy';
+import license from 'rollup-plugin-license';
 //import { terser } from 'rollup-plugin-terser';
 
 export default {
@@ -18,6 +19,12 @@ export default {
     commonjs(),
     buble({
       include: [ 'src/*.js' ]
+    }),
+    license({
+      sourcemap: false,
+      banner: {
+        content: { file: 'src/license.tpl.txt' }
+      }
     }),
     copy({
       flatten: false,
