@@ -1,8 +1,8 @@
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-//import buble from '@rollup/plugin-buble';
-//import { terser } from 'rollup-plugin-terser';
+import buble from '@rollup/plugin-buble';
 import copy from 'rollup-plugin-copy';
+//import { terser } from 'rollup-plugin-terser';
 
 export default {
   input: {
@@ -16,6 +16,9 @@ export default {
   plugins: [
     resolve(),
     commonjs(),
+    buble({
+      include: [ 'src/*.js' ]
+    }),
     copy({
       flatten: false,
       targets: [
