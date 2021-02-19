@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012-2020, Suretec Systems Ltd. <http://www.suretecsystems.com/>
+ * Copyright (c) 2012-2021, Suretec Systems Ltd. <http://www.suretecsystems.com/>
  * 
  * This file is part of the SureVoIP Browser Plugin
  * 
