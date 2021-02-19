@@ -18,6 +18,7 @@ export default {
     resolve(),
     commonjs(),
     buble({
+      transforms: { dangerousForOf: true },
       include: [ 'src/*.js' ]
     }),
     license({

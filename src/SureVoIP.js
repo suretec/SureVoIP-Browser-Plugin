@@ -486,21 +486,20 @@ const phoneNumberDetection = {
     IPAddressPattern: /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])[\.\-]){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/,
     init: function () {
         // Parse the document for phone numbers
-        phoneNumberDetection.startDetection();
-        setInterval(function () {
-            // Keep parsing the document for new numbers every 3 seconds
-            phoneNumberDetection.startDetection();
-        }, 3000);
-    },
-    startDetection: function () {
-        const $existingSureVoIPNumberLinks = $('.SureVoIPExtensionNumberLink');
-
-        phoneNumberDetection.detectTextNodes($('body')[0]);
-
-        console.log(`Registered Hover * ${$existingSureVoIPNumberLinks.length} -> ${$('.SureVoIPExtensionNumberLink').length}`);
-
-        // On hovering a number set the showMenu flag and set the "hoveredNumber" with the hovered number
-        $('.SureVoIPExtensionNumberLink').not($existingSureVoIPNumberLinks).hover(function () {
+        this.startDetection(document.body);
+        (new MutationObserver(list => {
+            //console.log(`Mutation in DOM catched`);
+            list.forEach(rec => {
+                this.startDetection(rec.type === 'characterData'? rec.target.parentNode : rec.target);
+            });
+        }))
+        .observe(document.body, {
+            childList: true,
+            characterData: true,
+            subtree: true
+        });
+        $(document.body)
+        .on('mouseenter', '.SureVoIPExtensionNumberLink', function () {
             console.log(`hover over link ${$(this).text()}`);
             showMenu = true;
             hoveredNumber = $(this).text();
@@ -509,68 +508,65 @@ const phoneNumberDetection = {
             popupContainer.show();
             const textHeight = $(this).css('height');
             popupContainer.css('top', Math.max(0, $(this).offset().top + parseInt(textHeight.substring(0, textHeight.length - 2))));
-        }, function () {
+        })
+        .on('mouseleave', '.SureVoIPExtensionNumberLink', function () {
             // Set showMenu to false and hide the menu
             console.log(`unhover link ${$(this).text()}`);
             showMenu = false;
             setTimeout(() => {
-                if (!showMenu) {
-                    //$(this).prev().hide();
-                    $('#SureVoIPExtensionPopupContainer').hide();
-                }
+                !showMenu && attachDialog.menuPopup.hide();
             }, 100);
         });
+
     },
-    detectTextNodes: function (node) {
-        if (['SCRIPT', 'STYLE', 'TEXTAREA'].indexOf(node.nodeName) > -1)
-            return;
-
-        // Need to bypass elements we already processed. This is required since we do this every few seconds.
-        if (node.classList && node.classList.contains('SureVoIPExtensionNumberLink'))
-            return;
-
-        if (node.id == 'SureVoIPExtensionDialog' || node.id == 'SureVoIPExtensionSMSDialog' || node.id == 'SureVoIPExtensionPopupContainer')
-            return;
-
-        if (node.nodeType == 3) {
-            this.detectPhoneNumbers(node);
-        } else {
-            node.childNodes.forEach(child => {
-                this.detectTextNodes(child);
-            })
+    startDetection: function (elem) {
+        const iterator = document.createNodeIterator(
+            elem,
+            NodeFilter.SHOW_TEXT,
+            null
+        );
+        const nodes = [];
+        let node;
+        while ((node = iterator.nextNode())) {
+            if (!node.parentNode) continue;
+            const parent = node.parentNode;
+            parent.nodeType === 1 && ['SCRIPT', 'NOSCRIPT', 'STYLE', 'TEXTAREA'].indexOf(parent.nodeName) <= -1 &&
+            (!parent.classList || !parent.classList.contains('SureVoIPExtensionNumberLink')) &&
+            ['SureVoIPExtensionDialog', 'SureVoIPExtensionSMSDialog', 'SureVoIPExtensionPopupContainer'].indexOf(parent.id) <= -1 &&
+            node.nodeValue.trim() &&
+            !/(?:<(?:style|no?script|a)>|surevoipextension)/i.test(node.nodeValue) &&
+            nodes.push(node);
         }
+        if (!nodes.length)
+            return false;
+        console.log(`startDetection(): n(nodes)=${nodes.length}`);
+        let n = 0;
+        for (let node of nodes) {
+            n += this.detectPhoneNumbers(node);
+        }
+        console.log(` new registered PhoneNumbers=${n}`);
     },
     detectPhoneNumbers: function (node) {
-        const parent = node.parentNode;
-        let originalText = node.nodeValue;
-        let newText = originalText;
-        let foundPhoneNumber = false;
-
-        // Get the match of the phone pattern in the text if found
-        const matches = originalText.match(this.phonePattern);
-        if (!matches)
-            return;
-
-        // Remove the IP addresses from the matches and wrap a span around the phone numbers
-        for (let j = matches.length - 1; j >= 0; j--) {
-            if (matches[j].match(this.IPAddressPattern))
-                continue;
-
-            const matchIndexStart = originalText.lastIndexOf(matches[j]);
-            const matchIndexEnd = matchIndexStart + matches[j].length;
-            //console.log(`found match: originalText=${originalText}; j=${j}; matchIndexStart=${matchIndexStart}; matchIndexEnd=${matchIndexEnd}; matches[j]=${matches[j]}`);
-            newText = newText.substring(0, matchIndexStart) + '<span class="SureVoIPExtensionNumberLink">' + matches[j] + '</span>' + newText.substring(matchIndexEnd);
-            originalText = originalText.substring(0, matchIndexStart);
-            foundPhoneNumber = true;
-        }
+        const left = '<span class="SureVoIPExtensionNumberLink">';
+        const right = '</span>';
+        let n = 0;
+        let text = node.nodeValue;
+        text = text.replace(this.phonePattern, (match) => {
+            if (this.IPAddressPattern.test(match))
+                return match;
+            n++;
+            return left + match + right;
+        });
+        if (!n)
+            return 0;
         // Removes the original text and put the new text instead of it
-        if (!foundPhoneNumber)
-            return;
+        const parent = node.parentNode;
+        console.log(`detectPhoneNumbers(): text="${text}"; parent.nodeName: ${parent.nodeName}`);
         const newDiv = document.createElement('div');
-        $(newDiv).addClass('SureVoIPExtensionNumberLinkContainer');
-        $(newDiv).html(newText);
-        parent.insertBefore(newDiv, node);
-        $(node).remove();
+        newDiv.classList.add('SureVoIPExtensionNumberLinkContainer');
+        newDiv.innerHTML = text;
+        parent.replaceChild(newDiv, node);
+        return n;
     }
 };
 
