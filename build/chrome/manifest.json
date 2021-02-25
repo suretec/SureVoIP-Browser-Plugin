@@ -1,47 +1,53 @@
 {
-	"manifest_version": 2,
-	"name": "SureVoIP",
-	"description": "SureVoIP Call and SMS Browser Add-on",
-	"version": "4.0.3",
-	"author": "SureVoIP",
-	"browser_action": {
-		"default_icon": {
-			"16": "images/icon-16.png",
-			"32": "images/icon-32.png"
-		},
-		"default_title": "SureVoIP"
-	},
-	"permissions": [
-		"https://api.surevoip.co.uk/calls",
-		"https://api.surevoip.co.uk/sms",
-		"storage"
-	],
-	"content_scripts": [
-		{
-			"matches": [ "*://*/*" ],
-			"css": [
-				"css/CustomCss.css"
-			],
-			"js": [
-				"js/jquery-3.5.1.min.js",
-				"js/content.js"
-			]
-		}
-	],
-	"web_accessible_resources": [
-		"images/*"
-	],
-	"icons": {
-		"16": "images/icon-16.png",
-		"32": "images/icon-32.png",
-		"48": "images/icon-48.png",
-		"128": "images/icon-128.png"
-	},
-	"background": {
-		"scripts": [
-			"js/jquery-3.5.1.min.js",
-			"js/background.js"
-		],
-		"persistent": false
-	}
+  "manifest_version": 3,
+  "name": "SureVoIP",
+  "description": "SureVoIP Call and SMS Browser Add-on",
+  "version": "5.0.0",
+  "author": "SureVoIP",
+  "permissions": [
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*/*"
+      ],
+      "css": [
+        "css/CustomCss.css"
+      ],
+      "js": [
+        "js/jquery-3.5.1.min.js",
+        "content.js"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "images/*"
+      ],
+      "matches": [],
+      "extension_ids": []
+    }
+  ],
+  "icons": {
+    "16": "images/icon-16.png",
+    "32": "images/icon-32.png",
+    "48": "images/icon-48.png",
+    "128": "images/icon-128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_icon": {
+      "16": "images/icon-16.png",
+      "32": "images/icon-32.png"
+    },
+    "default_title": "SureVoIP"
+  },
+  "host_permissions": [
+    "https://api.surevoip.co.uk/calls",
+    "https://api.surevoip.co.uk/sms"
+  ]
 }

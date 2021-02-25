@@ -27,6 +27,8 @@ var PostSaveAction = null;
 // showMenuis a flag to show menu when it is true
 var showMenu = false;
 
+var getURL = chrome.runtime.getURL;
+
 // class for dialog validations
 var dialogValidations = {
     //updates the error messages of the dialogs
@@ -109,7 +111,7 @@ var dialogs = {
     },
     // construct HTML of the Menu and add it to the page
     constructMenu: function () {
-        var html = "\n        <div id=\"SureVoIPExtensionPopupContainer\" style=\"display:none;\">\n            <div id=\"SureVoIPExtensionImgContainer\">\n                <img id=\"SureVoIPExtensionImg\"  src=\"" + (chrome.extension.getURL('images/surevoip-logo-white.svg')) + "\"/>\n            </div>\n            <a id=\"SureVoIPExtensionCallBtn\" href=\"javascript:void(0);\">\n                <div class=\"SureVoIPExtensionMenuItemContainer\">\n                    <img src=\"" + (chrome.extension.getURL('images/phone-alt.svg')) + "\" height=\"18px\"/> Call\n                </div>\n            </a>\n            <a id=\"SureVoIPExtensionSMSBtn\" href=\"javascript:void(0);\">\n                <div class=\"SureVoIPExtensionMenuItemContainer\">\n                    <img src=\"" + (chrome.extension.getURL('images/comments.svg')) + "\" height=\"18px\"/> Text\n                </div>\n            </a>\n            <a id=\"SureVoIPExtensionSettingsBtn\" href=\"javascript:void(0);\">\n                <div class=\"SureVoIPExtensionMenuItemContainer SureVoIPExtensionSettingsMenuItemContainer\">\n                    <img src=\"" + (chrome.extension.getURL('images/cogs.svg')) + "\" height=\"18px\"/> Settings\n                </div>\n            </a>\n        </div>";
+        var html = "\n        <div id=\"SureVoIPExtensionPopupContainer\" style=\"display:none;\">\n            <div id=\"SureVoIPExtensionImgContainer\">\n                <img id=\"SureVoIPExtensionImg\"  src=\"" + (getURL('images/surevoip-logo-white.svg')) + "\"/>\n            </div>\n            <a id=\"SureVoIPExtensionCallBtn\" href=\"javascript:void(0);\">\n                <div class=\"SureVoIPExtensionMenuItemContainer\">\n                    <img src=\"" + (getURL('images/phone-alt.svg')) + "\" height=\"18px\"/> Call\n                </div>\n            </a>\n            <a id=\"SureVoIPExtensionSMSBtn\" href=\"javascript:void(0);\">\n                <div class=\"SureVoIPExtensionMenuItemContainer\">\n                    <img src=\"" + (getURL('images/comments.svg')) + "\" height=\"18px\"/> Text\n                </div>\n            </a>\n            <a id=\"SureVoIPExtensionSettingsBtn\" href=\"javascript:void(0);\">\n                <div class=\"SureVoIPExtensionMenuItemContainer SureVoIPExtensionSettingsMenuItemContainer\">\n                    <img src=\"" + (getURL('images/cogs.svg')) + "\" height=\"18px\"/> Settings\n                </div>\n            </a>\n        </div>";
         $('body').append(html);
         var popupContainer = document.getElementById('SureVoIPExtensionPopupContainer');
 
@@ -291,10 +293,10 @@ var messageHandler = {
     init: function () {
         chrome.runtime.onMessage.addListener(this.handleMessageFromBackground);
     },
-    // Send message to background with certain action and value
-    sendMessageToBackground: function (action, value, callback) {
-        console.log(("sendMessageToBackground: action=" + action + "; value=" + value));
-        chrome.runtime.sendMessage({action: action, value: value}, function (response) {
+    // Send message to background with certain action and data
+    sendMessageToBackground: function (action, data, callback) {
+        console.log(("sendMessageToBackground: action=" + action + "; data=" + data));
+        chrome.runtime.sendMessage({action: action, data: data}, function (response) {
             console.log(("sendMessageToBackground-response: response=" + (JSON.stringify(response))));
             callback(response);
         });
@@ -313,45 +315,29 @@ var messageHandler = {
 var serverRequest = {
     // Send message to background to make the ajax request
     send: function (url, jsonData) {
-        var options = this.constructOptions(url, jsonData);
-        messageHandler.sendMessageToBackground(messageHandler.MESSAGES.DoServerRequest, options, function(response) {
+        messageHandler.sendMessageToBackground(messageHandler.MESSAGES.DoServerRequest, {url: url, payload: jsonData}, function(response) {
             if (response.ok) {
-                if (response.data == 202) {
-                    $('.SureVoIPExtensionLoadingDiv').css('background-image', ("url(\"" + (chrome.extension.getURL('images/RequestSent.png')) + "\")"));
+                if (response.status == 202) {
+                    $('.SureVoIPExtensionLoadingDiv').css('background-image', ("url(\"" + (getURL('images/RequestSent.png')) + "\")"));
                     $('.SureVoIPExtensionLoadingDiv').fadeOut(3000, function () {
-                        $('.SureVoIPExtensionLoadingDiv').css('background-image', ("url(\"" + (chrome.extension.getURL('images/SendingRequest.png')) + "\")"));
+                        $('.SureVoIPExtensionLoadingDiv').css('background-image', ("url(\"" + (getURL('images/SendingRequest.png')) + "\")"));
                     });
                 } else {
-                    alert(("SureVoIP \nServer responded with error code: " + (response.data)));
+                    alert(("SureVoIP \nServer responded with error code: " + (response.status)));
                     $('.SureVoIPExtensionLoadingDiv').hide();
                 }
             }
             else {
-                alert(("SureVoIP \nError sending request to the server.\nError message: " + (response.data)));
+                alert(("SureVoIP \nError sending request to the server.\nError message: " + (response.status)));
                 $('.SureVoIPExtensionLoadingDiv').hide();
             }
         });
     },
-    // Construct options for the ajax request
-    constructOptions: function (url, jsonData) {
-        var options = {
-            url: url,
-            type: 'POST',
-            cache: false,
-            dataType: 'json'
-        };
-        if (jsonData) {
-            options.data = JSON.stringify(jsonData, undefined);
-            options.contentType = 'application/json';
-        }
-        return options;
-    },
     sendCall: function (jsonData) {
-        this.send('https://api.surevoip.co.uk/calls', jsonData);
+        this.send('calls', jsonData);
     },
     sendSMS: function (jsonData) {
-        this.send('https://api.surevoip.co.uk/sms', jsonData);
-
+        this.send('sms', jsonData);
     },
 };
 
@@ -539,7 +525,7 @@ function init() {
     phoneNumberDetection.init();
     $('body').append('<div class="SureVoIPExtensionLoadingDiv" style="display:none;"></div>');
     $('.SureVoIPExtensionLoadingDiv').css({
-        'background-image': ("url(\"" + (chrome.extension.getURL('images/SendingRequest.png')) + "\")"),
+        'background-image': ("url(\"" + (getURL('images/SendingRequest.png')) + "\")"),
         'background-repeat': 'no-repeat',
         'background-position': '50% 50%',
         'background-color': 'rgba(102, 102, 102, 0.6)'

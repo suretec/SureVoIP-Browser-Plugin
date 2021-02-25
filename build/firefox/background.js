@@ -20,39 +20,52 @@
 
 'use strict';
 
+var actionApi = chrome[ 'browserAction'];
+
 // When the user clicks the browser button
-chrome.browserAction.onClicked.addListener(function (tab) {
+actionApi.onClicked.addListener(function (tab) {
     console.log(("onClicked: tab=" + (JSON.stringify(tab))));
     chrome.tabs.sendMessage(tab.id, {action:'SureVoIPExtension_OpenSettingsDialog'});
 });
 
 chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
     console.log(("onMessage: msg=" + (JSON.stringify(msg))));
-    switch (msg.action) {
-        // Make the json request
+    var action = msg.action;
+    var data = msg.data;
+    switch (action) {
         case 'SureVoIPExtension_DoServerRequest':
-            chrome.storage.local.get('settings', function (storage) {
-                var settings = storage.settings;
-                $.support.cors = true;
-                // make encode64 before sending the request
-                msg.value.beforeSend = function (xhr) {
-                    xhr.setRequestHeader("Authorization", "Basic " + encodingHelper.encode64(settings.username + ":" + settings.password));
-                };
-                // callback with success message
-                msg.value.success = function (data, textStatus, jqXHR) {
-                    sendResponse({ok: true, value: jqXHR.status});
-                };
-                // callback with error message
-                msg.value.error = function (xhr, ajaxOptions, thrownError) {
-                    sendResponse({ok: false, value: xhr.statusText});
-                };
-                $.ajax(msg.value);
-                        
-            });
+            serverRequest(data, sendResponse);
             return true;
     }
 });
 
+var baseUrl = 'https://api.surevoip.co.uk/';
+
+var serverRequest = function (data, sendResponse) {
+    chrome.storage.local.get('settings', function (storage) {
+        var settings = storage.settings;
+        var url = data.url;
+        var payload = data.payload;
+        fetch(baseUrl + url, {
+            method: "POST",
+            headers: {
+                'Authorization': "Basic " + encodingHelper.encode64(settings.username + ":" + settings.password),
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            mode: 'cors',
+            cache: 'no-cache',
+            credentials: 'omit',
+            body: JSON.stringify(payload)
+        })
+        .then(function (response) {
+            sendResponse({ok: response.ok, status: response.status});
+        })
+        .catch(function (error) {
+            sendResponse({ok: false, status: error});
+        });
+    });
+};
 
 // Class to encode the string to "encode64"
 var encodingHelper = {
