@@ -1,5 +1,7 @@
+const actionApi = chrome[process.env.CHROME? 'action' : 'browserAction'];
+
 // When the user clicks the browser button
-chrome.browserAction.onClicked.addListener(tab => {
+actionApi.onClicked.addListener(tab => {
     console.log(`onClicked: tab=${JSON.stringify(tab)}`);
     chrome.tabs.sendMessage(tab.id, {action:'SureVoIPExtension_OpenSettingsDialog'});
 });
@@ -8,31 +10,39 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     console.log(`onMessage: msg=${JSON.stringify(msg)}`);
     const {action, data} = msg;
     switch (action) {
-        // Make the json request
         case 'SureVoIPExtension_DoServerRequest':
-            chrome.storage.local.get('settings', storage => {
-                const { settings } = storage;
-                $.support.cors = true;
-                // make encode64 before sending the request
-                data.beforeSend = xhr => {
-                    xhr.setRequestHeader("Authorization", "Basic " + encodingHelper.encode64(settings.username + ":" + settings.password));
-                };
-                // callback with success message
-                data.success = (data, textStatus, xhr) => {
-                    sendResponse({ok: true, status: xhr.status});
-                };
-                // callback with error message
-                data.error = (xhr, textStatus, thrownError) => {
-                    sendResponse({ok: false, status: xhr.status});
-                };
-                $.ajax(data);
-                        
-            });
+            serverRequest(data, sendResponse);
             return true;
         default:
     }
 });
 
+const baseUrl = 'https://api.surevoip.co.uk/';
+
+const serverRequest = (data, sendResponse) => {
+    chrome.storage.local.get('settings', storage => {
+        const { settings } = storage;
+        const {url, payload} = data;
+        fetch(baseUrl + url, {
+            method: "POST",
+            headers: {
+                'Authorization': "Basic " + encodingHelper.encode64(settings.username + ":" + settings.password),
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            mode: 'cors',
+            cache: 'no-cache',
+            credentials: 'omit',
+            body: JSON.stringify(payload)
+        })
+        .then(response => {
+            sendResponse({ok: response.ok, status: response.status});
+        })
+        .catch(error => {
+            sendResponse({ok: false, status: error});
+        });
+    });
+};
 
 // Class to encode the string to "encode64"
 const encodingHelper = {
