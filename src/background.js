@@ -6,25 +6,26 @@ chrome.browserAction.onClicked.addListener(tab => {
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     console.log(`onMessage: msg=${JSON.stringify(msg)}`);
-    switch (msg.action) {
+    const {action, data} = msg;
+    switch (action) {
         // Make the json request
         case 'SureVoIPExtension_DoServerRequest':
             chrome.storage.local.get('settings', storage => {
                 const { settings } = storage;
                 $.support.cors = true;
                 // make encode64 before sending the request
-                msg.value.beforeSend = xhr => {
+                data.beforeSend = xhr => {
                     xhr.setRequestHeader("Authorization", "Basic " + encodingHelper.encode64(settings.username + ":" + settings.password));
                 };
                 // callback with success message
-                msg.value.success = (data, textStatus, jqXHR) => {
-                    sendResponse({ok: true, value: jqXHR.status});
+                data.success = (data, textStatus, xhr) => {
+                    sendResponse({ok: true, status: xhr.status});
                 };
                 // callback with error message
-                msg.value.error = (xhr, ajaxOptions, thrownError) => {
-                    sendResponse({ok: false, value: xhr.statusText});
+                data.error = (xhr, textStatus, thrownError) => {
+                    sendResponse({ok: false, status: xhr.status});
                 };
-                $.ajax(msg.value);
+                $.ajax(data);
                         
             });
             return true;

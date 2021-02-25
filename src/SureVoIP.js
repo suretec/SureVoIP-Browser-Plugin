@@ -336,10 +336,10 @@ const messageHandler = {
     init: function () {
         chrome.runtime.onMessage.addListener(this.handleMessageFromBackground);
     },
-    // Send message to background with certain action and value
-    sendMessageToBackground: function (action, value, callback) {
-        console.log(`sendMessageToBackground: action=${action}; value=${value}`);
-        chrome.runtime.sendMessage({action: action, value: value}, function (response) {
+    // Send message to background with certain action and data
+    sendMessageToBackground: function (action, data, callback) {
+        console.log(`sendMessageToBackground: action=${action}; data=${data}`);
+        chrome.runtime.sendMessage({action, data}, function (response) {
             console.log(`sendMessageToBackground-response: response=${JSON.stringify(response)}`);
             callback(response);
         });
@@ -361,18 +361,18 @@ const serverRequest = {
         const options = this.constructOptions(url, jsonData);
         messageHandler.sendMessageToBackground(messageHandler.MESSAGES.DoServerRequest, options, function(response) {
             if (response.ok) {
-                if (response.data == 202) {
+                if (response.status == 202) {
                     $('.SureVoIPExtensionLoadingDiv').css('background-image', `url("${chrome.extension.getURL('images/RequestSent.png')}")`);
                     $('.SureVoIPExtensionLoadingDiv').fadeOut(3000, function () {
                         $('.SureVoIPExtensionLoadingDiv').css('background-image', `url("${chrome.extension.getURL('images/SendingRequest.png')}")`);
                     });
                 } else {
-                    alert(`SureVoIP \nServer responded with error code: ${response.data}`);
+                    alert(`SureVoIP \nServer responded with error code: ${response.status}`);
                     $('.SureVoIPExtensionLoadingDiv').hide();
                 }
             }
             else {
-                alert(`SureVoIP \nError sending request to the server.\nError message: ${response.data}`);
+                alert(`SureVoIP \nError sending request to the server.\nError message: ${response.status}`);
                 $('.SureVoIPExtensionLoadingDiv').hide();
             }
         });
